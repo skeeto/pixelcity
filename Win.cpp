@@ -389,7 +389,7 @@ void AppQuit ()
 void AppInit (void)
 {
 
-  RandomInit (1);
+  RandomInit (time (NULL));
   CameraInit ();
   RenderInit ();
   TextureInit ();

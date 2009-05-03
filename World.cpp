@@ -212,7 +212,6 @@ static void build_road (int x1, int y1, int width, int depth)
     claim (x1 + sidewalk, y1, lanes, depth, CLAIM_ROAD | MAP_ROAD_SOUTH);
     claim (x1 + sidewalk + lanes + divider, y1, lanes, depth, CLAIM_ROAD | MAP_ROAD_NORTH);
   }
-  //new CStreet (x1, y1, width, depth);
 
 }
 
@@ -401,6 +400,7 @@ static void do_reset (void)
   GLrgba    building_color;
   float     west_street, north_street, east_street, south_street;
 
+  //Re-init Random to make the same city each time. Good for debugging.
   //RandomInit (6);
   reset_needed = false;
   broadway_done = false;

@@ -74,12 +74,6 @@
 #define EulOrdXYZr    EulOrd(Z,EulParOdd,EulRepNo,EulFrmR)
 #define EulOrdZYZr    EulOrd(Z,EulParOdd,EulRepYes,EulFrmR)
 
-//EulerAngles Eul_(float ai, float aj, float ah, int order);
-//Quat Eul_ToQuat(EulerAngles ea);
-//void Eul_ToHMatrix(EulerAngles ea, HMatrix M);
-//EulerAngles Eul_FromHMatrix(HMatrix M, int order);
-//EulerAngles Eul_FromQuat(Quat q, int order);
-
 #include <math.h>
 #include <float.h>
 

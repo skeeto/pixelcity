@@ -15,6 +15,7 @@ bool  RenderWireframe ();
 void  RenderWireframeToggle ();
 void  RenderHelpToggle ();
 void  RenderPrint (int x, int y, int font, GLrgba color, const char *fmt, ...);
+void  RenderPrint (int line, const char *fmt, ...);
 
 
 

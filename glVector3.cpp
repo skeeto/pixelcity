@@ -29,7 +29,6 @@ GLvector glVectorReflect (GLvector3 ray, GLvector3 normal)
   float       dot;
 
   dot = glVectorDotProduct (ray, normal);
-  //return glVectorSubtract (ray, glVectorScale (normal, 2.0f * dot));
   return ray - (normal * (2.0f * dot));
 
 }

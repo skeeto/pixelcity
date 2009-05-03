@@ -143,7 +143,7 @@ void CBuilding::RenderFlat (bool colored)
 
   if (colored)
     glColor3fv (&_color.red);
-  _mesh_flat->Render ();
+  //_mesh_flat->Render ();
 
 }
 

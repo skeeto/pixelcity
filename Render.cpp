@@ -343,6 +343,7 @@ static void do_effects (int type)
     radius = render_width / 16;
     do_progress ((float)render_width / 2, (float)render_height / 2, (float)radius, fade, EntityProgress ());
     RenderPrint (render_width / 2 - LOGO_PIXELS, render_height / 2 + LOGO_PIXELS, 0, glRgba (0.5f), "%1.2f%%", EntityProgress () * 100.0f);
+    RenderPrint (1, "%s v%d.%d.%03d", APP_TITLE, VERSION_MAJOR, VERSION_MINOR, VERSION_REVISION);
   }
   glPopMatrix ();
   glMatrixMode (GL_PROJECTION);
