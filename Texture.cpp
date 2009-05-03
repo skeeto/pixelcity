@@ -634,13 +634,10 @@ void CTexture::Rebuild ()
     glColor3f (1,1,1);
     while (i < _size) {
       //randomly use a prefix OR suffix, but not both.  Too verbose.
-      /*
       if (COIN_FLIP)
         RenderPrint (2, _size - i - LOGO_PIXELS / 4, RandomVal(), glRgba (1.0f), "%s%s", prefix[prefix_num], name[name_num]);
       else
         RenderPrint (2, _size - i - LOGO_PIXELS / 4, RandomVal(), glRgba (1.0f), "%s%s", name[name_num], suffix[suffix_num]);
-        */
-      RenderPrint (2, _size - i - LOGO_PIXELS / 4, RandomVal(), glRgba (1.0f), "Pixel City");
       name_num = (name_num + 1) % NAME_COUNT;
       prefix_num = (prefix_num + 1) % PREFIX_COUNT;
       suffix_num = (suffix_num + 1) % SUFFIX_COUNT;
@@ -683,7 +680,6 @@ void CTexture::Rebuild ()
             color = glRgba (0.0f);
           color.alpha = 1.0f;
           glColor4fv (&color.red);
-          //width_adjust = (int)((1.0f - scale) * ((float)width / 2.0f));
           width_adjust = (int)((float)width / 2.0f + (int)(inv_scale * ((float)width / 2.0f)));
           height_adjust = height + (int)(scale * (float)height * 0.99f);
 
