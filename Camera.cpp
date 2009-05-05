@@ -115,7 +115,7 @@ static void do_auto_cam ()
 
   now = GetTickCount ();
   elapsed = now - last_update;
-  elapsed = MIN (elapsed, 1000); //limit to 1 second worth of time
+  elapsed = MIN (elapsed, 50); //limit to 1/20th second worth of time
   if (elapsed == 0)
     return;
   last_update = now;
@@ -125,7 +125,7 @@ static void do_auto_cam ()
 #else
   behavior = camera_behavior;
 #endif
-  tracker += (float)elapsed / 100.0f;
+  tracker += (float)elapsed / 300.0f;
   //behavior = CAMERA_FLYCAM1; 
   switch (behavior) {
   case CAMERA_ORBIT_INWARD:
