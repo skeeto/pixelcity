@@ -107,7 +107,7 @@ float MathAngleDifference (float a1, float a2)
 
   float         result;
 
-  result = (float)fmod (a1 - a2, 360.0);
+  result = (float)fmod (a1 - a2, 360.0f);
   if (result > 180.0)
     return result - 360.0F;
   if (result < -180.0)
