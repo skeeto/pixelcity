@@ -34,6 +34,7 @@
 #include "texture.h"
 #include "world.h"
 #include "visible.h"
+#include "win.h"
 
 static GLvector           direction[] = 
 {

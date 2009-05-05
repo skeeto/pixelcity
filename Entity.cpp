@@ -26,6 +26,7 @@
 #include "texture.h"
 #include "world.h"
 #include "visible.h"
+#include "win.h"
 
 struct entity
 {
@@ -223,36 +224,6 @@ void EntityUpdate ()
       do_compile ();
 
 }
-
-/*-----------------------------------------------------------------------------
-
------------------------------------------------------------------------------*/
-
-void xEntityRender ()
-{
-
-  int       i;
-  bool      wireframe;
-  int       polymode[2];
-
-  glGetIntegerv (GL_POLYGON_MODE, &polymode[0]);
-  wireframe = polymode[0] != GL_FILL;
-  for (i = 0; i < entity_count; i++) {
-    if (Visible (entity_list[i].object->Center ())) {
-      glBindTexture(GL_TEXTURE_2D, entity_list[i].object->Texture ());
-      entity_list[i].object->Render ();
-    }
-  }
-  glBindTexture(GL_TEXTURE_2D, 0);
-  glColor3f (0,0,0);
-  for (i = 0; i < entity_count; i++) {
-    if (Visible (entity_list[i].object->Center ())) {
-      entity_list[i].object->RenderFlat (wireframe);
-    }
-  }
-
-}
-
 
 /*-----------------------------------------------------------------------------
 

@@ -24,6 +24,7 @@
 
 #include <windows.h>
 #include <stdio.h>
+#include <time.h>
 #include <stdarg.h>
 #include <math.h>
 
@@ -101,9 +102,9 @@ enum
   EFFECT_BLOOM_RADIAL,
   EFFECT_COLOR_CYCLE,
   EFFECT_GLASS_CITY,
+  EFFECT_COUNT,
   EFFECT_DEBUG,
   EFFECT_DEBUG_OVERBLOOM,
-  EFFECT_COUNT
 };
 #else
 enum
@@ -128,12 +129,10 @@ static int              render_height;
 static bool             letterbox;
 static int              letterbox_offset;
 static int              effect;
-static int              max_texture;
 static unsigned         next_fps;
 static unsigned         current_fps;
 static unsigned         frames;
 static bool             show_wireframe;
-static bool             bloom;
 static bool             flat;
 static bool             show_fps;
 static bool             show_fog;
@@ -260,7 +259,7 @@ static void do_effects (int type)
     //Psychedelic bloom
     glEnable (GL_BLEND);
     glBegin (GL_QUADS);
-    color = WorldBloomColor () * BLOOM_SCALING;
+    color = WorldBloomColor () * BLOOM_SCALING * 2;
     glColor3fv (&color.red);
     for (i = 0; i <= 100; i+=10) {
       glTexCoord2f (0, 0);  glVertex2i (-i, i + render_height);
@@ -519,12 +518,17 @@ void RenderInit (void)
 	  SelectObject(hDC, oldfont);
 	  DeleteObject(font);		
   }
+  //If the program is running for the first time, set the defaults.
+  if (!IniInt ("SetDefaults")) {
+    IniIntSet ("SetDefaults", 1);
+    IniIntSet ("Effect", EFFECT_BLOOM);
+    IniIntSet ("ShowFog", 1);
+  }
   //load in our settings
   letterbox = IniInt ("Letterbox") != 0;
   show_wireframe = IniInt ("Wireframe") != 0;
   show_fps = IniInt ("ShowFPS") != 0;
   show_fog = IniInt ("ShowFog") != 0;
-  bloom = IniInt ("Bloom") != 0;
   effect = IniInt ("Effect");
   flat = IniInt ("Flat") != 0;
   fog_distance = WORLD_HALF;
@@ -720,7 +724,7 @@ void RenderUpdate (void)
   glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
   glLoadIdentity();
-  glLineWidth (2.0f);
+  glLineWidth (1.0f);
   pos = CameraPosition ();
   angle = CameraAngle ();
   glRotatef (angle.x, 1.0f, 0.0f, 0.0f);

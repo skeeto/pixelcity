@@ -14,15 +14,6 @@
 
 #define HUE_COUNT         (sizeof(hue_list)/sizeof(float))
 #define LIGHT_COLOR_COUNT (sizeof(light_colors)/sizeof(HSL))
-#define CARS              600
-#define WORLD_EDGE        200
-#if SCREENSAVER
-#define RESET_INTERVAL    120     //seconds
-#define FADE_TIME         500    //milliseconds
-#else
-#define RESET_INTERVAL    999     //seconds
-#define FADE_TIME         1500   //milliseconds
-#endif
 
 #include <windows.h>
 #include <gl\gl.h>
@@ -45,6 +36,7 @@
 #include "sky.h"
 #include "texture.h"
 #include "visible.h"
+#include "win.h"
 #include "world.h"
 
 struct plot
@@ -400,7 +392,7 @@ static void do_reset (void)
   GLrgba    building_color;
   float     west_street, north_street, east_street, south_street;
 
-  //Re-init Random to make the same city each time. Good for debugging.
+  //Re-init Random to make the same city each time. Helpful when running tests.
   //RandomInit (6);
   reset_needed = false;
   broadway_done = false;
@@ -643,9 +635,9 @@ void WorldReset (void)
 void WorldRender ()
 {
 
-  //Cheap - render the crappy one-texture streets
   if (!SHOW_DEBUG_GROUND) 
     return;
+  //Render a single texture over the city that shows traffic lanes
   glDepthMask (false);
   glDisable (GL_CULL_FACE);
   glDisable (GL_BLEND);
@@ -659,6 +651,7 @@ void WorldRender ()
   glTexCoord2f (1, 0);   glVertex3f ( 1024, 0, 0);
   glEnd ();
   glDepthMask (true);
+
 
 }
 

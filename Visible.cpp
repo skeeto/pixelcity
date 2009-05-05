@@ -24,6 +24,7 @@
 #include "math.h"
 #include "visible.h"
 #include "world.h"
+#include "win.h"
 
 static bool          vis_grid[GRID_SIZE][GRID_SIZE];
 
@@ -67,7 +68,7 @@ void VisibleUpdate (void)
   float     angle_diff;
   float     target_x, target_z;
 
-  LIMIT_INTERVAL (50);
+  LIMIT_INTERVAL (10);
   //Clear the visibility table
   ZeroMemory (vis_grid, sizeof (vis_grid));
   //Calculate which cell the camera is in
