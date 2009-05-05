@@ -106,7 +106,7 @@ CLight::CLight (GLvector pos, GLrgba color, int size)
 {
 
   _position = pos;
-  _color = color * 0.5f;
+  _color = color;
   _size = CLAMP (size, 0, (MAX_SIZE - 1));
   _vert_size = (float)_size + 0.5f;
   _flat_size = _vert_size + 0.5f;
@@ -160,7 +160,6 @@ void CLight::Render ()
   angle = (int)MathAngle (camera.y);
   offset = angles[_size][angle];
   pos = _position;
-  //m_color.alpha = 0.25f;
   glColor4fv (&_color.red);
   glTexCoord2f (0, 0);   
   glVertex3f (pos.x + offset.x, pos.y - _vert_size, pos.z + offset.y);

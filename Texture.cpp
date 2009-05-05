@@ -10,7 +10,7 @@
 
   I apologize in advance for the apalling state of this module. It's the victim 
   of iterative and experimental development.  It has cruft, poorly named
-  functions, obscure code, poorly named variables, a is poorly organized. Even
+  functions, obscure code, poorly named variables, and is badly organized. Even
   the formatting sucks in places. Its only saving grace is that it works.
   
 -----------------------------------------------------------------------------*/
@@ -41,6 +41,7 @@
 #include "sky.h"
 #include "texture.h"
 #include "world.h"
+#include "win.h"
 
 static char*        prefix[] = 
 {
@@ -122,6 +123,7 @@ static char*        suffix[] =
   " UK",
   " Unlimited",
   " One",
+  " LLC"
 };
   
 class CTexture
@@ -582,7 +584,7 @@ void CTexture::Rebuild ()
         radius = ((float)_half / 2);
       else
         radius = 8;
-      glColor4f (1, 1, 0, 0);
+      glColor4f (1, 1, 1, 0);
       for (i = 0; i <= 360; i++) {
         pos.x = sinf ((float)i * DEGREES_TO_RADIANS) * radius;
         pos.y = cosf ((float)i * DEGREES_TO_RADIANS) * radius;
