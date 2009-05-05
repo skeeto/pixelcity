@@ -95,10 +95,10 @@ void VisibleUpdate (void)
     right = 0;
   //Now mark the block around us the might be visible
   for (x = grid_x - left; x <= grid_x + right; x++) {
-    if (x < 0 || x >= WORLD_SIZE) //just in case the camera leaves the world map
+    if (x < 0 || x >= GRID_SIZE) //just in case the camera leaves the world map
       continue;
     for (y = grid_z - back; y <= grid_z + front; y++) {
-      if (y < 0 || y >= WORLD_SIZE) //just in case the camera leaves the world map
+      if (y < 0 || y >= GRID_SIZE) //just in case the camera leaves the world map
         continue;
       vis_grid[x][y] = true;
     }
