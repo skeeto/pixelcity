@@ -8,6 +8,7 @@ void  RenderFogToggle ();
 void  RenderFPSToggle ();
 void  RenderInit ();
 void  RenderLetterboxToggle ();
+int   RenderMaxTextureSize ();
 void  RenderResize ();
 void  RenderTerm ();
 void  RenderUpdate ();

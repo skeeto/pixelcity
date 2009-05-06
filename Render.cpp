@@ -112,8 +112,8 @@ enum
   EFFECT_NONE,
   EFFECT_BLOOM,
   EFFECT_COUNT,
-  EFFECT_DEBUG,
   EFFECT_DEBUG_OVERBLOOM,
+  EFFECT_DEBUG,
   EFFECT_BLOOM_RADIAL,
   EFFECT_COLOR_CYCLE,
   EFFECT_GLASS_CITY,
@@ -161,8 +161,6 @@ static void do_progress (float center_x, float center_y, float radius, float opa
   glColor4f (1,1,1, opacity);
   glBegin (GL_QUAD_STRIP);
   for (i = 0; i <= 360; i+= 15) {
-    //GLrgba col = glRgbaUnique (i);
-    //glColor3fv (&col.red);
     angle = (float)i * DEGREES_TO_RADIANS;
     s = sinf (angle);
     c = -cosf (angle);
@@ -314,7 +312,7 @@ static void do_effects (int type)
   case EFFECT_DEBUG_OVERBLOOM:
     //This will punish that uppity GPU. Good for testing low frame rate behavior.
     glBegin (GL_QUADS);
-    color = WorldBloomColor () * 0.06f;
+    color = WorldBloomColor () * 0.01f;
     glColor3fv (&color.red);
     for (x = -50; x <= 50; x+=5) {
       for (y = -50; y <= 50; y+=5) {
@@ -348,6 +346,22 @@ static void do_effects (int type)
   glMatrixMode (GL_PROJECTION);
   glPopMatrix ();
   glMatrixMode (GL_MODELVIEW);
+
+}
+
+
+/*-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------*/
+
+int RenderMaxTextureSize ()
+{
+
+  int mts;
+
+  glGetIntegerv(GL_MAX_TEXTURE_SIZE, &mts);
+  mts = MIN (mts, render_width);
+  return MIN (mts, render_height);
 
 }
 
@@ -698,8 +712,13 @@ void RenderUpdate (void)
   glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
   if (letterbox) 
     glViewport (0, letterbox_offset, render_width, render_height);
-
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  if (TextureReady () && !EntityReady ()) {
+    do_effects (-1);
+    SwapBuffers (hDC);
+    return;
+  }
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
   glShadeModel(GL_SMOOTH);
   glFogi (GL_FOG_MODE, GL_LINEAR);
@@ -711,7 +730,6 @@ void RenderUpdate (void)
     glFogfv (GL_FOG_COLOR, &color.red);
   } else 
     glDisable (GL_FOG);
-  //glEnable (GL_COLOR_MATERIAL);
 	glDepthFunc(GL_LEQUAL);
   glEnable(GL_DEPTH_TEST);
   glEnable (GL_CULL_FACE);
@@ -722,7 +740,6 @@ void RenderUpdate (void)
   glLoadIdentity();
 	glMatrixMode (GL_MODELVIEW);
   glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-
   glLoadIdentity();
   glLineWidth (1.0f);
   pos = CameraPosition ();
@@ -757,7 +774,6 @@ void RenderUpdate (void)
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     EntityRender ();
   }
-  //do_effects (EntityReady () ? effect : -1);
   do_effects (effect);
   //Framerate tracker
   if (GetTickCount () > next_fps) {

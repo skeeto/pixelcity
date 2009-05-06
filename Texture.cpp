@@ -131,6 +131,7 @@ class CTexture
 public:
   int               _my_id;
   unsigned          _glid;
+  int               _desired_size;
   int               _size;
   int               _half;
   int               _segment_size;
@@ -342,6 +343,7 @@ static void window (int x, int y, int size, int id, GLrgba color)
 static void do_bloom (CTexture* t)
 {
 
+  LIMIT_INTERVAL (10);
   glBindTexture(GL_TEXTURE_2D, 0);		
   glViewport(0, 0, t->_size , t->_size);
   glCullFace (GL_BACK);
@@ -358,7 +360,6 @@ static void do_bloom (CTexture* t)
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   glClearColor (0.0f, 0.0f, 0.0f, 0.0f);
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  WorldRender ();
   glEnable (GL_TEXTURE_2D);
   EntityRender ();
   CarRender ();
@@ -381,6 +382,7 @@ CTexture::CTexture (int id, int size, bool mipmap, bool clamp, bool masked)
   _mipmap = mipmap;
   _clamp = clamp;
   _masked = masked;
+  _desired_size = size;
   _size = size;
   _half = size / 2;
   _segment_size = size / SEGMENTS_PER_TEXTURE;
@@ -455,6 +457,7 @@ void CTexture::Rebuild ()
   int             i, j;
   int             x, y;
   int             name_num, prefix_num, suffix_num;
+  int             max_size;
   float           radius;
   GLvector2       pos;
   GLrgba          color;
@@ -472,6 +475,12 @@ void CTexture::Rebuild ()
     glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   }
+  //Since we make textures by drawing into the viewport, we can't make them bigger 
+  //than the current view.
+  _size = _desired_size;
+  max_size = RenderMaxTextureSize ();
+  while (_size > max_size)
+    _size /= 2;
   //Set up our viewport so that drawing into our texture will be as easy 
   //as possible.  We make the viewport and projection simply match the given 
   //texture size. 
