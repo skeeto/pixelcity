@@ -4,7 +4,6 @@
 
 class CDeco : CEntity
 {
-//  CDeco*        _next;
   GLrgba        _color;
   class CMesh*  _mesh;
   int           _type;
@@ -14,6 +13,7 @@ class CDeco : CEntity
 public:
 
                 CDeco ();
+                ~CDeco ();
   void          CreateLogo (GLvector2 start, GLvector2 end, float base, int seed, GLrgba color);
   void          CreateLightStrip (float x, float z, float width, float depth, float height, GLrgba color);
   void          CreateLightTrim (GLvector* chain, int count, float height, int seed, GLrgba color);
