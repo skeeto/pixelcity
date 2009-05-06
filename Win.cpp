@@ -33,10 +33,8 @@
 #include "world.h"
 #include "visible.h"
 
-
 #pragma comment (lib, "opengl32.lib")
 #pragma comment (lib, "glu32.lib")
-#pragma comment (lib, "GLaux.lib")
 #if SCREENSAVER
 #pragma comment (lib, "scrnsave.lib")
 #endif	
@@ -52,10 +50,8 @@ static bool         rmb;
 static bool         mouse_forced;
 static POINT        select_pos;
 static POINT        mouse_pos;
-
-static bool           quit;
-static HINSTANCE      instance;
-
+static bool         quit;
+static HINSTANCE    instance;
 
 /*-----------------------------------------------------------------------------
 
@@ -126,6 +122,7 @@ LRESULT CALLBACK WndProc (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
       IniIntSet ("WindowWidth", width);
       IniIntSet ("WindowHeight", height);
     }
+    RenderResize ();
     return 0;
   case WM_MOVE:
     GetClientRect (hwnd, &r);
@@ -395,9 +392,11 @@ void AppUpdate ()
   CameraUpdate ();
   WorldUpdate ();
   TextureUpdate ();
+  WorldUpdate ();
   VisibleUpdate ();
   CarUpdate ();
   EntityUpdate ();
+  WorldUpdate ();
   RenderUpdate ();
 
 }
@@ -476,6 +475,7 @@ LONG WINAPI ScreenSaverProc (HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
   case WM_PAINT:
     AppUpdate ();
     return 0;
+  case WM_MOVE:
   case WM_SIZE:
     param = wParam;      // resizing flag 
     width = LOWORD(lParam);  // width of client area 
@@ -487,6 +487,7 @@ LONG WINAPI ScreenSaverProc (HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
       IniIntSet ("WindowWidth", width);
       IniIntSet ("WindowHeight", height);
     }
+    RenderResize ();
     return 0;
   case WM_MOVE:
     GetClientRect (hwnd, &r);
