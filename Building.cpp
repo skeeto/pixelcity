@@ -772,27 +772,28 @@ void CBuilding::CreateTower ()
   int         tier_fraction;
   int         grouping;
   int         foundation;
+  int         narrowing_interval;
+  int         tiers;
   float       ledge;
   float       uv_start;
   bool        blank_corners;
   bool        roof_spike;
-  bool        narrowing;
   bool        tower;
 
   //How much ledges protrude from the building
   ledge = (float)RandomVal (3) * 0.25f;
   //How tall the ledges are, in stories
-  ledge_height = RandomVal (3) + 1;
+  ledge_height = RandomVal (4) + 1;
   //How the windows are grouped
   grouping = RandomVal (3) + 2;
   //if the corners of the building have no windows
-  blank_corners = COIN_FLIP;
+  blank_corners = RandomVal (4) > 0;
   //if the roof is pointed or has infrastructure on it
   roof_spike = RandomVal (3) == 0;
   //What fraction of the remaining height should be given to each tier
-  tier_fraction = 2 + RandomVal (3);
-  //Does the tower get narrower towards the top?
-  narrowing = RandomVal (3) == 0;
+  tier_fraction = 2 + RandomVal (4);
+  //How often (in tiers) does the building get narrorwer?
+  narrowing_interval = 1 + RandomVal (10);
   //The height of the windowsless slab at the bottom
   foundation = 2 + RandomVal (3);
   //The odds that we'll have a big fancy spikey top
@@ -803,6 +804,7 @@ void CBuilding::CreateTower ()
   front = _y;
   back = _y + _depth;
   bottom = 0;
+  tiers = 0;
   //build the foundations.
   ConstructCube ((float)left - ledge, (float)right + ledge, (float)front - ledge, (float)back + ledge, (float)bottom, (float)foundation);
   bottom += foundation;
@@ -828,9 +830,8 @@ void CBuilding::CreateTower ()
     bottom += ledge_height;
     if (bottom > _height)
       break;
-    if (ledge_height > 1 && narrowing)
-      ledge_height--;
-    if (narrowing) {
+    tiers++;
+    if ((tiers % narrowing_interval) == 0) {
       if (section_width > 7) {
         left+=1;
         right-=1;
