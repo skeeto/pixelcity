@@ -36,7 +36,7 @@ CMesh::CMesh ()
   _fan_count = 0;
   _cube_count = 0;
   _polycount = 0;
-  _list = 0;
+  _list = glGenLists(1);
   _compiled = false;
   _vertex = NULL;
   _normal = NULL;
@@ -66,10 +66,12 @@ CMesh::~CMesh ()
     free (_cube);
   for (i = 0; i < _quad_strip_count; i++) 
     delete _quad_strip[i].index_list;
-  delete _quad_strip;
+  if (_quad_strip)
+    delete _quad_strip;
   for (i = 0; i < _fan_count; i++) 
     delete _fan[i].index_list;
-  delete _fan;
+  if (_fan)
+    delete _fan;
   if (_list)
     glDeleteLists (_list, 1);
 
@@ -206,8 +208,6 @@ void CMesh::Render ()
 void CMesh::Compile ()
 {
 
-  if (!_list)
-    _list = glGenLists(1);
   glNewList (_list, GL_COMPILE);
   Render ();
   glEndList();	

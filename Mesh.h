@@ -38,9 +38,6 @@ public:
   fan*        _fan;
   bool        _compiled;
 
-  //void        TriangleRender (unsigned n);
-  //GLtriangle* TriangleAdd (unsigned v1, int unsigned, int unsigned);
-  //GLtriangle* TriangleAdd (GLtriangle c);
   void        NormalAdd (GLvector n);
   void        VertexAdd (GLvertex v);
   int         VertexCount () { return _vertex_count; }
