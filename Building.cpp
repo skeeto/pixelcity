@@ -64,8 +64,7 @@ CBuilding::CBuilding (int type, int x, int y, int height, int width, int depth, 
   _have_trim = false;
   _roof_tiers = 0;
   //Pick a color for logos & roof lights
-  //_trim_color = WorldLightColor (seed);
-  _trim_color = glRgbaFromHsl (0.5f, 1.0f, 0.9f);
+  _trim_color = WorldLightColor (seed);
   _mesh = new CMesh; //The main textured mesh for the building
   _mesh_flat = new CMesh; //Flat-color mesh for untextured detail items.
   switch (type) {
