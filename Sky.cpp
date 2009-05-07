@@ -140,7 +140,6 @@ CSky::CSky ()
   }
   glEnd ();
   glEndList();	
-  glEndList();	
   sky = this;
 
 }
