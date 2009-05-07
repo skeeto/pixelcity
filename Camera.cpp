@@ -51,17 +51,16 @@ static GLvector     position;
 static GLvector     auto_angle;
 static GLvector     auto_position;
 static float        distance;
-static float        movement;
-static bool         moving;
+static GLvector     movement;
 static bool         cam_auto;
 static float        tracker;
 static unsigned     last_update;
 static int          camera_behavior;
+static unsigned     last_move;
 
 /*-----------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------*/
-
 
 static GLvector flycam_position (unsigned t)
 {
@@ -198,7 +197,6 @@ void CameraNextBehavior ()
 
 }
 
-
 /*-----------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------*/
@@ -206,7 +204,6 @@ void CameraNextBehavior ()
 void CameraYaw (float delta)
 {
 
-  moving = true;
   angle.y -= delta;
 
 }
@@ -218,7 +215,6 @@ void CameraYaw (float delta)
 void CameraPitch (float delta)
 {
 
-  moving = true;
   angle.x -= delta;
 
 }
@@ -232,7 +228,6 @@ void CameraPan (float delta)
 
   float           move_x, move_y;
 
-  moving = true;
   move_x = (float)sin (-angle.y * DEGREES_TO_RADIANS) / 10.0f;
   move_y = (float)cos (-angle.y * DEGREES_TO_RADIANS) / 10.0f;
   position.x -= move_y * delta;
@@ -249,7 +244,6 @@ void CameraForward (float delta)
 
   float           move_x, move_y;
 
-  moving = true;
   move_y = (float)sin (-angle.y * DEGREES_TO_RADIANS) / 10.0f;
   move_x = (float)cos (-angle.y * DEGREES_TO_RADIANS) / 10.0f;
   position.x -= move_y * delta;
@@ -257,14 +251,15 @@ void CameraForward (float delta)
 
 }
 
-
-
 /*-----------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------*/
 
-void CameraSelectionPitch (float delta)
+void CameraVertical (float val)
 {
+
+  movement.y += val;
+  last_move = GetTickCount ();
 
 }
 
@@ -272,8 +267,11 @@ void CameraSelectionPitch (float delta)
 
 -----------------------------------------------------------------------------*/
 
-void CameraSelectionZoom (float delta)
+void CameraLateral (float val)
 {
+
+  movement.x += val;
+  last_move = GetTickCount ();
 
 }
 
@@ -281,8 +279,11 @@ void CameraSelectionZoom (float delta)
 
 -----------------------------------------------------------------------------*/
 
-void CameraSelectionYaw (float delta)
+void CameraMedial (float val)
 {
+
+  movement.z += val;
+  last_move = GetTickCount ();
 
 }
 
@@ -370,22 +371,21 @@ void CameraInit (void)
 void CameraUpdate (void)		
 {
 
-#if SCREENSAVER
-  cam_auto = true;
-#endif
+  CameraPan (movement.x);
+  CameraForward (movement.z);
+  position.y += movement.y / 10.0f;
+  if (GetTickCount () - last_move > 1000)
+    movement *= 0.9f;
+  else
+    movement *= 0.99f;
+  if (SCREENSAVER)
+    cam_auto = true;
   if (cam_auto) 
     do_auto_cam ();
-  if (moving) 
-    movement *= 1.1f;
-  else
-    movement = 0.0f;
-  movement = CLAMP (movement, 0.01f, 1.0f);
-  
   if (angle.y < 0.0f) 
     angle.y = 360.0f - (float)fmod (fabs (angle.y), 360.0f);
   angle.y = (float)fmod (angle.y, 360.0f);
   angle.x = CLAMP (angle.x, -MAX_PITCH, MAX_PITCH);
-  moving = false;
  
 }
 
