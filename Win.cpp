@@ -34,10 +34,13 @@
 #include "visible.h"
 
 #pragma comment (lib, "opengl32.lib")
+#pragma comment (lib, "winmm.lib")
 #pragma comment (lib, "glu32.lib")
 #if SCREENSAVER
 #pragma comment (lib, "scrnsave.lib")
 #endif	
+
+
 
 static HWND         hwnd;
 static HINSTANCE    module;
@@ -52,6 +55,8 @@ static POINT        select_pos;
 static POINT        mouse_pos;
 static bool         quit;
 static HINSTANCE    instance;
+
+LONG WINAPI ScreenSaverProc (HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 /*-----------------------------------------------------------------------------
 
@@ -90,141 +95,6 @@ static void MoveCursor (int x, int y)
   center_x = rect.left + x;
   center_y = rect.top + y;
   SetCursorPos (center_x, center_y);
-
-}
-
-
-/*-----------------------------------------------------------------------------
-
------------------------------------------------------------------------------*/
-
-LRESULT CALLBACK WndProc (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-
-
-  RECT            r;
-  float           delta_x, delta_y;
-  POINT           p;
-  int             param;
-  int             key;
-
-	switch (message) 	{
-  case WM_SIZE:
-    param = wParam;      // resizing flag 
-    width = LOWORD(lParam);  // width of client area 
-    height = HIWORD(lParam); // height of client area 
-
-    if (param == SIZE_RESTORED) 
-      IniIntSet ("WindowMaximized", 0);
-    if (param == SIZE_MAXIMIZED) {
-      IniIntSet ("WindowMaximized", 1);
-    } else {
-      IniIntSet ("WindowWidth", width);
-      IniIntSet ("WindowHeight", height);
-    }
-    RenderResize ();
-    return 0;
-  case WM_MOVE:
-    GetClientRect (hwnd, &r);
-    height = r.bottom - r.top;
-    width = r.right - r.left;
-    IniIntSet ("WindowX", r.left);
-    IniIntSet ("WindowY", r.top);
-    IniIntSet ("WindowWidth", width);
-    IniIntSet ("WindowHeight", height);
-    half_width = width / 2;
-    half_height = height / 2;
-    break;
-  case WM_KEYDOWN:
-    key = (int) wParam; 
-    
-    if (key == 'R')
-      WorldReset (); 
-    if (key == 'C')
-      CameraAutoToggle (); 
-    if (key == 'W')
-      RenderWireframeToggle ();
-    if (key == 'E')
-      RenderEffectCycle ();
-    if (key == 'L')
-      RenderLetterboxToggle ();
-    if (key == 'F')
-      RenderFPSToggle ();
-    if (key == 'G')
-      RenderFogToggle ();
-    if (key == 'T')
-      RenderFlatToggle ();
-    if (key == VK_F1)
-      RenderHelpToggle ();
-    if (key == 'B')
-      CameraNextBehavior ();
-    if (key == VK_ESCAPE)
-      quit = true;
-    if (key == VK_F5)
-      CameraReset ();
-    return 0;
-  case WM_LBUTTONDOWN:
-    lmb = true;
-    SetCapture (hwnd);
-    break;
-  case WM_RBUTTONDOWN:
-    rmb = true;
-    SetCapture (hwnd);
-    break;
-  case WM_LBUTTONUP:
-    lmb = false;
-    if (!rmb) {
-      ReleaseCapture ();
-      MoveCursor (select_pos.x, select_pos.y);
-    }
-    break;
-  case WM_RBUTTONUP:
-    rmb = false;
-    if (!lmb) {
-      ReleaseCapture ();
-      MoveCursor (select_pos.x, select_pos.y);
-    }
-    break;
-  case WM_MOUSEMOVE:
-    p.x = LOWORD(lParam);  // horizontal position of cursor 
-    p.y = HIWORD(lParam);  // vertical position of cursor 
-    if (p.x < 0 || p.x > width)
-      break;
-    if (p.y < 0 || p.y > height)
-      break;
-    if (!mouse_forced && !lmb && !rmb) {
-      select_pos = p; 
-    }
-    if (mouse_forced) {
-      mouse_forced = false;
-    } else if (rmb || lmb) {
-      CenterCursor ();
-      delta_x = (float)(mouse_pos.x - p.x) * MOUSE_MOVEMENT;
-      delta_y = (float)(mouse_pos.y - p.y) * MOUSE_MOVEMENT;
-      if (rmb && lmb) {
-        GLvector    pos;
-        CameraPan (delta_x);
-        pos = CameraPosition ();
-        pos.y += delta_y;
-        CameraPositionSet (pos);
-      } else if (rmb) {
-        CameraPan (delta_x);
-        CameraForward (delta_y);
-      } else if (lmb) {
-        GLvector    angle;
-        angle = CameraAngle ();
-        angle.y -= delta_x;
-        angle.x += delta_y;
-        CameraAngleSet (angle);
-      }
-    }
-    mouse_pos = p;
-    break;
-  case WM_CLOSE:
-    quit = true;
-    return 0;
-  }
-  return DefWindowProc(hWnd, message, wParam, lParam);   
 
 }
 
@@ -303,6 +173,296 @@ HWND WinHwnd (void)
 
 }
 
+
+/*-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------*/
+
+void AppQuit ()
+{
+
+  quit = true;
+
+}
+
+/*-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------*/
+
+void AppUpdate ()
+{
+
+  CameraUpdate ();
+  WorldUpdate ();
+  TextureUpdate ();
+  VisibleUpdate ();
+  CarUpdate ();
+  EntityUpdate ();
+  RenderUpdate ();
+
+}
+
+/*-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------*/
+
+void CALLBACK Appx (HWND hwnd, UINT uMsg, UINT idEvent, DWORD dwTime) 
+{
+
+  static int  ii;
+  //for (int i = 0; i < 1000;i++)
+  AppUpdate ();
+  ii++;
+  if (ii > 1)
+    ii++;
+  //PostQuitMessage (1);
+  //exit (1);
+
+}
+
+static void do_timer () 
+{
+
+  TIMECAPS  tc;
+  int       resolution;
+
+  if (timeGetDevCaps(&tc, sizeof(TIMECAPS)) != TIMERR_NOERROR) {
+      resolution = 0;
+  }
+  resolution = min(max(tc.wPeriodMin, 1), tc.wPeriodMax);
+  if (!timeSetEvent (1, resolution,(LPTIMECALLBACK)Appx, 123, TIME_PERIODIC | TIME_CALLBACK_FUNCTION ))
+      resolution = 0;
+
+}
+
+
+
+/*-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------*/
+
+void AppInit (void)
+{
+
+  RandomInit (time (NULL));
+  CameraInit ();
+  RenderInit ();
+  TextureInit ();
+  WorldInit ();
+
+}
+
+
+/*-----------------------------------------------------------------------------
+                                W i n M a i n
+-----------------------------------------------------------------------------*/
+
+void AppTerm (void) 
+{
+
+  TextureTerm ();
+  WorldTerm ();
+  RenderTerm ();
+  CameraTerm ();
+  WinTerm ();
+
+}
+
+/*-----------------------------------------------------------------------------
+                                W i n M a i n
+-----------------------------------------------------------------------------*/
+#if !SCREENSAVER
+
+int PASCAL WinMain (HINSTANCE instance_in, HINSTANCE previous_instance,
+  LPSTR command_line, int show_style)
+{
+
+ 	MSG		  msg;
+
+  instance = instance_in;
+  WinInit ();
+  AppInit ();
+  while (!quit) {
+		if (PeekMessage (&msg, NULL, 0, 0, PM_REMOVE))	{
+			if (msg.message == WM_QUIT)	
+				quit = true;
+			else {
+				TranslateMessage(&msg);			
+				DispatchMessage(&msg);			
+			}
+    } else 
+      AppUpdate ();
+
+  }
+  AppTerm ();
+  return 0;
+
+}
+
+#else
+
+BOOL WINAPI ScreenSaverConfigureDialog (HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam) { return FALSE; }
+BOOL WINAPI RegisterDialogClasses(HANDLE hInst) { return TRUE; }
+
+#endif
+
+LONG WINAPI ScreenSaverProc(HWND hwnd_in,UINT message,WPARAM wparam,LPARAM lparam)
+{
+
+  RECT            r;
+  int             key;
+  float           delta_x, delta_y;
+  POINT           p;
+
+  // Handles screen saver messages
+  switch(message)
+  {
+  case WM_SIZE:
+    width = LOWORD(lparam);  // width of client area 
+    height = HIWORD(lparam); // height of client area 
+    if (wparam == SIZE_MAXIMIZED) {
+      IniIntSet ("WindowMaximized", 1);
+    } else {
+      IniIntSet ("WindowWidth", width);
+      IniIntSet ("WindowHeight", height);
+      IniIntSet ("WindowMaximized", 0);
+    }
+    RenderResize ();
+    break;
+  case WM_KEYDOWN:
+    key = (int) wparam; 
+    if (key == 'R')
+      WorldReset (); 
+    else if (key == 'W')
+      RenderWireframeToggle ();
+    else if (key == 'E')
+      RenderEffectCycle ();
+    else if (key == 'L')
+      RenderLetterboxToggle ();
+    else if (key == 'F')
+      RenderFPSToggle ();
+    else if (key == 'G')
+      RenderFogToggle ();
+    else if (key == 'T')
+      RenderFlatToggle ();
+    else if (key == VK_F1)
+      RenderHelpToggle ();
+    else if (key == VK_ESCAPE)
+      break;
+    else if (!SCREENSAVER) {
+      //Dev mode keys
+      if (key == 'C')
+        CameraAutoToggle (); 
+      if (key == 'B')
+        CameraNextBehavior ();
+      if (key == VK_F5)
+        CameraReset ();
+      if (key == VK_UP)
+        CameraMedial (1.0f);
+      if (key == VK_DOWN)
+        CameraMedial (-1.0f);
+      if (key == VK_LEFT)
+        CameraLateral (1.0f);
+      if (key == VK_RIGHT)
+        CameraLateral (-1.0f);
+      if (key == VK_PRIOR)
+        CameraVertical (1.0f);
+      if (key == VK_NEXT)
+        CameraVertical (-1.0f);
+      if (key == VK_F5)
+        CameraReset ();
+      return 0;
+    } else
+      break;
+    return 0;
+  case WM_MOVE:
+    GetClientRect (hwnd, &r);
+    height = r.bottom - r.top;
+    width = r.right - r.left;
+    IniIntSet ("WindowX", r.left);
+    IniIntSet ("WindowY", r.top);
+    IniIntSet ("WindowWidth", width);
+    IniIntSet ("WindowHeight", height);
+    half_width = width / 2;
+    half_height = height / 2;
+    return 0;
+  case WM_LBUTTONDOWN:
+    lmb = true;
+    SetCapture (hwnd);
+    break;
+  case WM_RBUTTONDOWN:
+    rmb = true;
+    SetCapture (hwnd);
+    break;
+  case WM_LBUTTONUP:
+    lmb = false;
+    if (!rmb) {
+      ReleaseCapture ();
+      MoveCursor (select_pos.x, select_pos.y);
+    }
+    break;
+  case WM_RBUTTONUP:
+    rmb = false;
+    if (!lmb) {
+      ReleaseCapture ();
+      MoveCursor (select_pos.x, select_pos.y);
+    }
+    break;
+  case WM_MOUSEMOVE:
+    p.x = LOWORD(lparam);  // horizontal position of cursor 
+    p.y = HIWORD(lparam);  // vertical position of cursor 
+    if (p.x < 0 || p.x > width)
+      break;
+    if (p.y < 0 || p.y > height)
+      break;
+    if (!mouse_forced && !lmb && !rmb) {
+      select_pos = p; 
+    }
+    if (mouse_forced) {
+      mouse_forced = false;
+    } else if (rmb || lmb) {
+      CenterCursor ();
+      delta_x = (float)(mouse_pos.x - p.x) * MOUSE_MOVEMENT;
+      delta_y = (float)(mouse_pos.y - p.y) * MOUSE_MOVEMENT;
+      if (rmb && lmb) {
+        GLvector    pos;
+        CameraPan (delta_x);
+        pos = CameraPosition ();
+        pos.y += delta_y;
+        CameraPositionSet (pos);
+      } else if (rmb) {
+        CameraPan (delta_x);
+        CameraForward (delta_y);
+      } else if (lmb) {
+        GLvector    angle;
+        angle = CameraAngle ();
+        angle.y -= delta_x;
+        angle.x += delta_y;
+        CameraAngleSet (angle);
+      }
+    }
+    mouse_pos = p;
+    break;
+  case WM_CREATE:
+    hwnd = hwnd_in;
+    AppInit ();
+    SetTimer (hwnd, 1, 7, NULL); 
+    return 0;
+  case WM_TIMER:
+    AppUpdate ();
+    return 0;
+  case WM_DESTROY:
+    PostQuitMessage(0);
+    return 0;
+  }
+#if SCREENSAVER
+  return DefScreenSaverProc(hwnd_in,message,wparam,lparam);
+#else
+  return DefWindowProc (hwnd_in,message,wparam,lparam);   
+#endif
+
+}
+
 /*-----------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------*/
@@ -317,7 +477,7 @@ bool WinInit (void)
 
 	wcex.cbSize         = sizeof(WNDCLASSEX); 
 	wcex.style			    = CS_HREDRAW | CS_VREDRAW;
-	wcex.lpfnWndProc	  = (WNDPROC)WndProc;
+	wcex.lpfnWndProc	  = (WNDPROC)ScreenSaverProc;
 	wcex.cbClsExtra		  = 0;
 	wcex.cbWndExtra		  = 0;
 	wcex.hInstance		  = instance;
@@ -355,243 +515,3 @@ bool WinInit (void)
   return true;
 
 }
-
-/*-----------------------------------------------------------------------------
-
------------------------------------------------------------------------------*/
-
-void AppQuit ()
-{
-
-  quit = true;
-
-}
-
-/*-----------------------------------------------------------------------------
-
------------------------------------------------------------------------------*/
-
-void AppInit (void)
-{
-
-  RandomInit (time (NULL));
-  CameraInit ();
-  RenderInit ();
-  TextureInit ();
-  WorldInit ();
-
-}
-
-/*-----------------------------------------------------------------------------
-
------------------------------------------------------------------------------*/
-
-void AppUpdate ()
-{
-
-  CameraUpdate ();
-  WorldUpdate ();
-  TextureUpdate ();
-  WorldUpdate ();
-  VisibleUpdate ();
-  CarUpdate ();
-  EntityUpdate ();
-  WorldUpdate ();
-  RenderUpdate ();
-
-}
-
-/*-----------------------------------------------------------------------------
-                                W i n M a i n
------------------------------------------------------------------------------*/
-
-void AppTerm (void) 
-{
-
-  TextureTerm ();
-  WorldTerm ();
-  RenderTerm ();
-  CameraTerm ();
-  WinTerm ();
-
-}
-
-/*-----------------------------------------------------------------------------
-                                W i n M a i n
------------------------------------------------------------------------------*/
-#if !SCREENSAVER
-
-int PASCAL WinMain (HINSTANCE instance_in, HINSTANCE previous_instance,
-  LPSTR command_line, int show_style)
-{
-
- 	MSG		  msg;
-
-  instance = instance_in;
-  WinInit ();
-  AppInit ();
-	while (!quit) {
-		if (PeekMessage(&msg,NULL,0,0,PM_REMOVE))	{
-			if (msg.message == WM_QUIT)	
-				quit = true;
-			else {
-				TranslateMessage(&msg);			
-				DispatchMessage(&msg);			
-			}
-    } else	{
-      AppUpdate ();
-    }
-  }
-  AppTerm ();
-  return 0;
-
-}
-
-#else
-
-static bool     terminated;
-
-LONG WINAPI ScreenSaverProc (HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{
-
-  RECT            r;
-  float           delta_x, delta_y;
-  POINT           p;
-  int             param;
-  int             key;
-
-  if (terminated)
-    return DefScreenSaverProc (hWnd, msg, wParam, lParam);
-  switch (msg) {
-  case WM_CREATE:
-    hwnd = hWnd;
-    AppInit ();
-    return 0;
-  case WM_CLOSE:
-  case WM_DESTROY:
-    AppTerm ();
-    terminated = true;
-    return 0;
-  case WM_PAINT:
-    AppUpdate ();
-    return 0;
-  case WM_MOVE:
-  case WM_SIZE:
-    param = wParam;      // resizing flag 
-    width = LOWORD(lParam);  // width of client area 
-    height = HIWORD(lParam); // height of client area 
-
-    if (param == SIZE_MAXIMIZED) {
-      IniIntSet ("WindowMaximized", 1);
-    } else {
-      IniIntSet ("WindowWidth", width);
-      IniIntSet ("WindowHeight", height);
-    }
-    RenderResize ();
-    return 0;
-  case WM_MOVE:
-    GetClientRect (hwnd, &r);
-    height = r.bottom - r.top;
-    width = r.right - r.left;
-    IniIntSet ("WindowX", r.left);
-    IniIntSet ("WindowY", r.top);
-    IniIntSet ("WindowWidth", width);
-    IniIntSet ("WindowHeight", height);
-    half_width = width / 2;
-    half_height = height / 2;
-    break;
-  case WM_KEYDOWN:
-    key = (int) wParam; 
-    
-    if (key == 'R')
-      WorldReset (); 
-    else if (key == 'C')
-      CameraAutoToggle (); 
-    else if (key == 'W')
-      RenderWireframeToggle ();
-    else if (key == 'E')
-      RenderEffectCycle ();
-    else if (key == 'L')
-      RenderLetterboxToggle ();
-    else if (key == 'F')
-      RenderFPSToggle ();
-    else if (key == 'G')
-      RenderFogToggle ();
-    else if (key == 'T')
-      RenderFlatToggle ();
-    else if (key == VK_F1)
-      RenderHelpToggle ();
-    else if (key == VK_ESCAPE)
-      break;
-    else if (key == VK_F5)
-      CameraReset ();
-    else
-      break;
-    return 0;
-  case WM_LBUTTONDOWN:
-    lmb = true;
-    SetCapture (hwnd);
-    break;
-  case WM_RBUTTONDOWN:
-    rmb = true;
-    SetCapture (hwnd);
-    break;
-  case WM_LBUTTONUP:
-    lmb = false;
-    if (!rmb) {
-      ReleaseCapture ();
-      MoveCursor (select_pos.x, select_pos.y);
-    }
-    break;
-  case WM_RBUTTONUP:
-    rmb = false;
-    if (!lmb) {
-      ReleaseCapture ();
-      MoveCursor (select_pos.x, select_pos.y);
-    }
-    break;
-  case WM_MOUSEMOVE:
-    p.x = LOWORD(lParam);  // horizontal position of cursor 
-    p.y = HIWORD(lParam);  // vertical position of cursor 
-    if (p.x < 0 || p.x > width)
-      break;
-    if (p.y < 0 || p.y > height)
-      break;
-    if (!mouse_forced && !lmb && !rmb) {
-      select_pos = p; 
-    }
-    if (mouse_forced) {
-      mouse_forced = false;
-    } else if (rmb || lmb) {
-      CenterCursor ();
-      delta_x = (float)(mouse_pos.x - p.x) * MOUSE_MOVEMENT;
-      delta_y = (float)(mouse_pos.y - p.y) * MOUSE_MOVEMENT;
-      if (rmb && lmb) {
-        GLvector    pos;
-        CameraPan (delta_x);
-        pos = CameraPosition ();
-        pos.y += delta_y;
-        CameraPositionSet (pos);
-      } else if (rmb) {
-        CameraPan (delta_x);
-        CameraForward (delta_y);
-      } else if (lmb) {
-        GLvector    angle;
-        angle = CameraAngle ();
-        angle.y -= delta_x;
-        angle.x += delta_y;
-        CameraAngleSet (angle);
-      }
-    }
-    mouse_pos = p;
-    break;
-
-  }
-  return DefScreenSaverProc (hWnd, msg, wParam, lParam);
-
-}
-
-BOOL WINAPI ScreenSaverConfigureDialog (HWND hDlg, UINT msg, WPARAM wParam, LPARAM lParam) { return FALSE; }
-BOOL WINAPI RegisterDialogClasses(HANDLE hInst) { return TRUE; }
-
-#endif

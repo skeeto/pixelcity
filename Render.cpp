@@ -458,6 +458,20 @@ void static do_help (void)
 
 -----------------------------------------------------------------------------*/
 
+void do_fps ()
+{
+
+  LIMIT_INTERVAL (1000);
+  current_fps = frames;
+  frames = 0;
+
+}
+
+
+/*-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------*/
+
 void RenderResize (void)		
 {
 
@@ -708,12 +722,13 @@ void RenderUpdate (void)
   GLvector        angle;
   GLrgba          color;
 
+  frames++;
+  do_fps ();
   glViewport (0, 0, WinWidth (), WinHeight ());
   glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
   if (letterbox) 
     glViewport (0, letterbox_offset, render_width, render_height);
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
   if (TextureReady () && !EntityReady ()) {
     do_effects (-1);
     SwapBuffers (hDC);
@@ -776,23 +791,18 @@ void RenderUpdate (void)
   }
   do_effects (effect);
   //Framerate tracker
-  if (GetTickCount () > next_fps) {
-    current_fps = frames;
-    frames = 0;
-    next_fps = GetTickCount () + 1000;
-  }
   if (show_fps && !show_help) {
-    RenderPrint (1, "FPS=%d", current_fps);
-    RenderPrint (2, "Entities=%d", EntityCount () + LightCount () + CarCount ());
-    RenderPrint (3, "Lights=%d", LightCount ());
-    RenderPrint (4, "Polys=%d", EntityPolyCount () + LightCount () + CarCount ());
-    RenderPrint (5, "Building=%1.2f", EntityProgress () * 100);
+    RenderPrint (2, "FPS=%d", current_fps);
+    RenderPrint (3, "Entities=%d", EntityCount () + LightCount () + CarCount ());
+    RenderPrint (4, "Lights=%d", LightCount ());
+    RenderPrint (5, "Polys=%d", EntityPolyCount () + LightCount () + CarCount ());
+    RenderPrint (6, "Building=%1.2f", EntityProgress () * 100);
+    RenderPrint (7, "%d", GetTickCount ());
   }
   //Show the help overlay
   if (show_help)
     do_help ();
   glDepthMask (true);
-  frames++;
   SwapBuffers (hDC);
 
 }

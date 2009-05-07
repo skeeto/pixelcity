@@ -110,8 +110,8 @@ static int            blocky_count;
 static bool           reset_needed;
 static int            skyscrapers;
 static GLbbox         hot_zone;
-static unsigned       start_time;
 static int            logo_index;
+static unsigned       start_time;
 
 /*-----------------------------------------------------------------------------
 
@@ -271,8 +271,9 @@ void do_building (plot p)
   if (p.width < 10 || p.depth < 10)
     return;
   //If the area is too big for one building, sub-divide it.
-  if (area > 600) {
-    if (p.width > p.depth) {
+ 
+  if (area > 1400) {
+    if (COIN_FLIP) {
       p.width /= 2;
       if (COIN_FLIP)
         do_building (make_plot (p.x, p.z, p.width, p.depth));
@@ -294,6 +295,7 @@ void do_building (plot p)
   square = abs (p.width - p.depth) < 10;
   //mark the land as used so other buildings don't appear here, even if we don't use it all.
   claim (p.x, p.z, p.width, p.depth, CLAIM_BUILDING);
+  /*
   //The roundy mod buildings look best on square plots.
   if (square && p.width > 20) {
     height = 45 + RandomVal (10);
@@ -302,6 +304,16 @@ void do_building (plot p)
     new CBuilding (BUILDING_MODERN, p.x, p.z, height, p.width, p.depth, seed, color);
     return;
   }
+  //Rectangular plots are a good place for Blocky style buildsing to sprawl blockily.
+  if (p.width > p.depth * 2 || p.depth > p.width * 2 && area > 800) {
+    height = 20 + RandomVal (10);
+    blocky_count++;
+    skyscrapers++;
+    new CBuilding (BUILDING_BLOCKY, p.x, p.z, height, p.width, p.depth, seed, color);
+    return;
+  }
+  */
+  tower_count = -1;
   //This spot isn't ideal for any particular building, but try to keep a good mix
   if (tower_count < modern_count && tower_count < blocky_count) {
     type = BUILDING_TOWER;
@@ -408,7 +420,7 @@ static void do_reset (void)
   bloom_color = get_light_color(0.5f + (float)RandomVal (10) / 20.0f, 0.75f);
   light_color = glRgbaFromHsl (0.11f, 1.0f, 0.65f);
   ZeroMemory (world, WORLD_SIZE * WORLD_SIZE);
-  for (y = WORLD_EDGE; y < WORLD_SIZE - WORLD_EDGE; y += RandomVal (30) + 20) {
+  for (y = WORLD_EDGE; y < WORLD_SIZE - WORLD_EDGE; y += RandomVal (25) + 25) {
     if (!broadway_done && y > WORLD_HALF - 20) {
       build_road (0, y, WORLD_SIZE, 19);
       y += 20;
@@ -424,7 +436,7 @@ static void do_reset (void)
   }
 
   broadway_done = false;
-  for (x = WORLD_EDGE; x < WORLD_SIZE - WORLD_EDGE; x += RandomVal (30) + 20) {
+  for (x = WORLD_EDGE; x < WORLD_SIZE - WORLD_EDGE; x += RandomVal (25) + 25) {
     if (!broadway_done && x > WORLD_HALF - 20) {
       build_road (x, 0, 19, WORLD_SIZE);
       x += 20;
@@ -485,6 +497,7 @@ static void do_reset (void)
     }
   }
   
+  
   //Scan over the center area of the map and place the big buildings 
   attempts = 0;
    while (skyscrapers < 50 && attempts < 350) {
@@ -496,6 +509,7 @@ static void do_reset (void)
     }
     attempts++;
   }
+  
   //now blanket the rest of the world with lesser buildings
   for (x = 0; x < WORLD_SIZE; x ++) {
     for (y = 0; y < WORLD_SIZE; y ++) {
