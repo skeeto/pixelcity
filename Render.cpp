@@ -446,7 +446,7 @@ void static do_help (void)
   text = strtok (parse, "\n");
   x = 10;
   while (text) {
-    RenderPrint (line + 1, text);
+    RenderPrint (line + 2, text);
     text = strtok (NULL, "\n");
     line++;
   }
@@ -791,13 +791,8 @@ void RenderUpdate (void)
   }
   do_effects (effect);
   //Framerate tracker
-  if (show_fps && !show_help) {
-    RenderPrint (2, "FPS=%d", current_fps);
-    RenderPrint (3, "Entities=%d", EntityCount () + LightCount () + CarCount ());
-    RenderPrint (4, "Lights=%d", LightCount ());
-    RenderPrint (5, "Polys=%d", EntityPolyCount () + LightCount () + CarCount ());
-    RenderPrint (6, "Building=%1.2f", EntityProgress () * 100);
-    RenderPrint (7, "%d", GetTickCount ());
+  if (show_fps) {
+    RenderPrint (1, "FPS=%d : Entities=%d : polys=%d", current_fps, EntityCount () + LightCount () + CarCount (), EntityPolyCount () + LightCount () + CarCount ());
   }
   //Show the help overlay
   if (show_help)
