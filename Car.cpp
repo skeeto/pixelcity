@@ -269,15 +269,19 @@ void CCar::Render ()
   GLvector  pos;
   int       angle;
   int       turn;
+  float     top;
 
   if (!m_ready)
     return;
   if (!Visible (m_drive_position))
     return;
-  if (m_front)
+  if (m_front) {
     glColor3f (1, 1, 0.8f);
-  else
-    glColor3f (1, 0.2f, 0);
+    top = CAR_SIZE;
+  } else {
+    glColor3f (0.5, 0.2f, 0);
+    top = 0.0f;
+  }
 
   glBegin (GL_QUADS);
 
@@ -289,34 +293,14 @@ void CCar::Render ()
   m_drive_angle += SIGN (turn);
   pos += glVector (0.5f, 0.0f, 0.5f);
   
-
   glTexCoord2f (0, 0);   
   glVertex3f (pos.x + angles[angle].x, -CAR_SIZE, pos.z + angles[angle].y);
   glTexCoord2f (1, 0);   
   glVertex3f (pos.x - angles[angle].x, -CAR_SIZE, pos.z - angles[angle].y);
   glTexCoord2f (1, 1);   
-  glVertex3f (pos.x - angles[angle].x,  CAR_SIZE, pos.z - angles[angle].y);
+  glVertex3f (pos.x - angles[angle].x,  top, pos.z - angles[angle].y);
   glTexCoord2f (0, 1);   
-  glVertex3f (pos.x + angles[angle].x,  CAR_SIZE, pos.z +  angles[angle].y);
-
-
-  /*
-  glVertex3f (m_position.x, m_position.y, m_position.z);
-  glVertex3f (m_position.x, m_position.y, m_position.z + 1);
-  glVertex3f (m_position.x + 1, m_position.y, m_position.z + 1);
-  glVertex3f (m_position.x + 1, m_position.y, m_position.z);
-*/
-  /*
-  glTexCoord2f (0, 0);   
-  glVertex3f (m_position.x, m_position.y, m_position.z + 0.2f);
-  glTexCoord2f (0, 2);   
-  glVertex3f (m_position.x, m_position.y, m_position.z + 1 - 0.2f);
-  glTexCoord2f (1, 2);   
-  glVertex3f (m_position.x + 1, m_position.y, m_position.z + 1 - 0.2f);
-  glTexCoord2f (1, 0);   
-  glVertex3f (m_position.x + 1, m_position.y, m_position.z + 0.2f);
-
-*/
+  glVertex3f (pos.x + angles[angle].x,  top, pos.z +  angles[angle].y);
   
   glEnd ();
 
