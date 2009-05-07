@@ -210,6 +210,8 @@ float EntityProgress ()
 void EntityUpdate ()
 {
 
+  unsigned    stop_time;
+
   if (!TextureReady ()) {
     sorted = false;
     return;
@@ -218,10 +220,11 @@ void EntityUpdate ()
     qsort (entity_list, entity_count, sizeof (struct entity), do_compare);
     sorted = true;
   }
-  
-  if (!compiled)
-    for (int i = 0; i < 10; i++)
-      do_compile ();
+  //We want to do several cells at once. Enough to get things done, but
+  //not so many that the program is unresponsive.
+  stop_time = GetTickCount () + 100;
+  while (!compiled && GetTickCount () < stop_time)
+    do_compile ();
 
 }
 
