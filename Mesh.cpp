@@ -43,8 +43,12 @@ CMesh::CMesh ()
 CMesh::~CMesh ()
 {
 
-  if (_list)
-    glDeleteLists (_list, 1);
+  glDeleteLists (_list, 1);
+  _vertex.clear ();
+  _fan.clear ();
+  _quad_strip.clear ();
+  _cube.clear ();
+
 
 }
 

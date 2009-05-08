@@ -15,13 +15,14 @@ protected:
 
 public:
                           CEntity (void);
-  GLvector                Center () { return _center; }
+  virtual                 ~CEntity () {};
   virtual void            Render (void);
   virtual void            RenderFlat (bool wirefame);
   virtual unsigned        Texture () { return 0; }
   virtual void            Update (void);
   virtual bool            Alpha () { return false; }
   virtual int             PolyCount () { return 0; }
+  GLvector                Center () { return _center; }
 
 };
 

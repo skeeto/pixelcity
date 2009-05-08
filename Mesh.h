@@ -24,14 +24,11 @@ public:
   unsigned                _list;
   int                     _polycount;
   std::vector<GLvertex>   _vertex;  
-  std::vector<GLvector>   _normal;
-  std::vector<GLtriangle> _triangle;
   std::vector<cube>       _cube;
   std::vector<quad_strip> _quad_strip;
   std::vector<fan>        _fan;
   bool                    _compiled;
 
-  void        NormalAdd (const GLvector& n);
   void        VertexAdd (const GLvertex& v);
   int         VertexCount () { return _vertex.size(); }
   int         PolyCount () { return _polycount; }
