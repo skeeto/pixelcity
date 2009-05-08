@@ -112,6 +112,7 @@ static int            skyscrapers;
 static GLbbox         hot_zone;
 static int            logo_index;
 static unsigned       start_time;
+static int            scene_begin;
 
 /*-----------------------------------------------------------------------------
 
@@ -272,7 +273,7 @@ void do_building (plot p)
     return;
   //If the area is too big for one building, sub-divide it.
  
-  if (area > 1400) {
+  if (area > 800) {
     if (COIN_FLIP) {
       p.width /= 2;
       if (COIN_FLIP)
@@ -295,7 +296,7 @@ void do_building (plot p)
   square = abs (p.width - p.depth) < 10;
   //mark the land as used so other buildings don't appear here, even if we don't use it all.
   claim (p.x, p.z, p.width, p.depth, CLAIM_BUILDING);
-  /*
+  
   //The roundy mod buildings look best on square plots.
   if (square && p.width > 20) {
     height = 45 + RandomVal (10);
@@ -304,6 +305,7 @@ void do_building (plot p)
     new CBuilding (BUILDING_MODERN, p.x, p.z, height, p.width, p.depth, seed, color);
     return;
   }
+  /*
   //Rectangular plots are a good place for Blocky style buildsing to sprawl blockily.
   if (p.width > p.depth * 2 || p.depth > p.width * 2 && area > 800) {
     height = 20 + RandomVal (10);
@@ -313,7 +315,7 @@ void do_building (plot p)
     return;
   }
   */
-  tower_count = -1;
+  //tower_count = -1;
   //This spot isn't ideal for any particular building, but try to keep a good mix
   if (tower_count < modern_count && tower_count < blocky_count) {
     type = BUILDING_TOWER;
@@ -410,6 +412,7 @@ static void do_reset (void)
   broadway_done = false;
   skyscrapers = 0;
   logo_index = 0;
+  scene_begin = 0;
   tower_count = blocky_count = modern_count = 0;
   hot_zone = glBboxClear ();
   EntityClear ();
@@ -681,6 +684,36 @@ float WorldFade (void)
 
 }
 
+/*-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------*/
+
+int WorldSceneBegin ()
+{
+
+  return scene_begin;
+
+}
+
+/*-----------------------------------------------------------------------------
+
+  How long since this current iteration of the city went on display,
+
+-----------------------------------------------------------------------------*/
+
+int WorldSceneElapsed ()
+{
+
+  int     elapsed;
+
+  if (!EntityReady () || !WorldSceneBegin ())
+    elapsed = 1;
+  else
+    elapsed = GetTickCount () - (WorldSceneBegin ());
+  elapsed = MAX (elapsed, 1);
+  return elapsed;
+
+}
 
 /*-----------------------------------------------------------------------------
 
@@ -690,7 +723,7 @@ void WorldUpdate (void)
 {
 
   unsigned      fade_delta;
-  unsigned      now, elapsed;
+  int           now;
 
   now = GetTickCount ();
   if (reset_needed) {
@@ -713,6 +746,7 @@ void WorldUpdate (void)
         fade_state = FADE_IDLE;
         fade_current = 0.0f;
         start_time = time (NULL);
+        scene_begin = GetTickCount ();
       }
     } else {
       fade_current = (float)fade_delta / FADE_TIME;
@@ -728,8 +762,7 @@ void WorldUpdate (void)
     fade_state = FADE_IN;
     fade_start = now;
   }
-  elapsed = time (NULL) - start_time;
-  if (fade_state == FADE_IDLE && elapsed > RESET_INTERVAL)
+  if (fade_state == FADE_IDLE && WorldSceneElapsed () > RESET_INTERVAL)
     WorldReset ();
 
 }

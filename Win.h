@@ -3,15 +3,17 @@
 #define APP                 "pixelcity"
 #define VERSION_MAJOR       1
 #define VERSION_MINOR       0
-#define VERSION_REVISION    5
+#define VERSION_REVISION    10
 //Best to disable screensaver mode when working on the program.
 #define SCREENSAVER         0
+//Do we hide scene building behing a loading screen or show it?
+#define LOADING_SCREEN      1
 //Controls the density of cars.
-#define CARS                0
+#define CARS                500
 //The "dead zone" along the edge of the world, with super-low detail.
 #define WORLD_EDGE          200
 //How often to rebuild the city
-#define RESET_INTERVAL      (SCREENSAVER ? 120 : 999)//seconds
+#define RESET_INTERVAL      (SCREENSAVER ? 120000 : 999999)//milliseconds
 //How long the screen fade takes when transitioning to a new city
 #define FADE_TIME           (SCREENSAVER ? 1500 : 1) //milliseconds
 //Debug ground texture that shows traffic lanes

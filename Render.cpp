@@ -217,7 +217,7 @@ static void do_effects (int type)
   fade = WorldFade ();
   bloom_radius = 15;
   bloom_step = bloom_radius / 3;
-  if (!TextureReady () && fade == 0.0f)
+  if (!TextureReady ())
     return;
   //Now change projection modes so we can render full-screen effects
   glDisable(GL_DEPTH_TEST);
@@ -230,9 +230,9 @@ static void do_effects (int type)
   glLoadIdentity();
   glTranslatef(0, 0, -1.0f);				
   glDisable (GL_CULL_FACE);
+  glDisable (GL_FOG);
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   //Render full-screen effects
-
   glBlendFunc (GL_ONE, GL_ONE);
   glEnable (GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D, TextureId (TEXTURE_BLOOM));
@@ -326,26 +326,31 @@ static void do_effects (int type)
     break;
   }
   //Do the fade to / from darkness used to hide scene transitions
-  glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glEnable (GL_BLEND);
-  glDisable (GL_TEXTURE_2D);
-  glColor4f (0, 0, 0, fade);
-  glBegin (GL_QUADS);
-  glVertex2i (0, 0);
-  glVertex2i (0, render_height);
-  glVertex2i (render_width, render_height);
-  glVertex2i (render_width, 0);
-  glEnd ();
-  if (TextureReady () && !EntityReady () && fade != 0.0f) {
-    radius = render_width / 16;
-    do_progress ((float)render_width / 2, (float)render_height / 2, (float)radius, fade, EntityProgress ());
-    RenderPrint (render_width / 2 - LOGO_PIXELS, render_height / 2 + LOGO_PIXELS, 0, glRgba (0.5f), "%1.2f%%", EntityProgress () * 100.0f);
-    RenderPrint (1, "%s v%d.%d.%03d", APP_TITLE, VERSION_MAJOR, VERSION_MINOR, VERSION_REVISION);
+  if (LOADING_SCREEN) {
+    if (fade > 0.0f) {
+      glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      glEnable (GL_BLEND);
+      glDisable (GL_TEXTURE_2D);
+      glColor4f (0, 0, 0, fade);
+      glBegin (GL_QUADS);
+      glVertex2i (0, 0);
+      glVertex2i (0, render_height);
+      glVertex2i (render_width, render_height);
+      glVertex2i (render_width, 0);
+      glEnd ();
+    }
+    if (TextureReady () && !EntityReady () && fade != 0.0f) {
+      radius = render_width / 16;
+      do_progress ((float)render_width / 2, (float)render_height / 2, (float)radius, fade, EntityProgress ());
+      RenderPrint (render_width / 2 - LOGO_PIXELS, render_height / 2 + LOGO_PIXELS, 0, glRgba (0.5f), "%1.2f%%", EntityProgress () * 100.0f);
+      RenderPrint (1, "%s v%d.%d.%03d", APP_TITLE, VERSION_MAJOR, VERSION_MINOR, VERSION_REVISION);
+    }
   }
   glPopMatrix ();
   glMatrixMode (GL_PROJECTION);
   glPopMatrix ();
   glMatrixMode (GL_MODELVIEW);
+  glEnable(GL_DEPTH_TEST);
 
 }
 
@@ -713,6 +718,27 @@ float RenderFogDistance ()
 
 /*-----------------------------------------------------------------------------
 
+  This is used to set a gradient fog that goes from camera to some portion of 
+  the normal fog distance.  This is used for making wireframe outlines and
+  flat surfaces fade out after rebuild.  Looks cool.
+
+-----------------------------------------------------------------------------*/
+
+void RenderFogFX (float scalar)
+{
+
+  if (scalar >= 1.0f) {
+    glDisable (GL_FOG);
+    return;
+  }
+  glFogf (GL_FOG_START, 0.0f);
+  glFogf (GL_FOG_END, fog_distance * 2.0f * scalar);
+  glEnable (GL_FOG);
+
+}
+
+/*-----------------------------------------------------------------------------
+
 -----------------------------------------------------------------------------*/
 
 void RenderUpdate (void)		
@@ -721,32 +747,26 @@ void RenderUpdate (void)
   GLvector        pos;
   GLvector        angle;
   GLrgba          color;
+  int             elapsed;
 
   frames++;
   do_fps ();
   glViewport (0, 0, WinWidth (), WinHeight ());
+  glDepthMask (true);
   glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
+  glEnable(GL_DEPTH_TEST);
+  glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   if (letterbox) 
     glViewport (0, letterbox_offset, render_width, render_height);
-  glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  if (TextureReady () && !EntityReady ()) {
-    do_effects (-1);
+  if (LOADING_SCREEN && TextureReady () && !EntityReady ()) {
+    do_effects (EFFECT_NONE);
     SwapBuffers (hDC);
     return;
   }
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
   glShadeModel(GL_SMOOTH);
   glFogi (GL_FOG_MODE, GL_LINEAR);
-  if (show_fog) {
-    glEnable (GL_FOG);
-    glFogf (GL_FOG_START, fog_distance - 100);
-    glFogf (GL_FOG_END, fog_distance);
-    color = glRgba (0.0f);
-    glFogfv (GL_FOG_COLOR, &color.red);
-  } else 
-    glDisable (GL_FOG);
 	glDepthFunc(GL_LEQUAL);
-  glEnable(GL_DEPTH_TEST);
   glEnable (GL_CULL_FACE);
   glCullFace (GL_BACK);
   glEnable (GL_BLEND);
@@ -766,7 +786,15 @@ void RenderUpdate (void)
   glEnable (GL_TEXTURE_2D);
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   //Render all the stuff in the whole entire world.
+  glDisable (GL_FOG);
   SkyRender ();
+  if (show_fog) {
+    glEnable (GL_FOG);
+    glFogf (GL_FOG_START, fog_distance - 100);
+    glFogf (GL_FOG_END, fog_distance);
+    color = glRgba (0.0f);
+    glFogfv (GL_FOG_COLOR, &color.red);
+  }
   WorldRender ();
   if (effect == EFFECT_GLASS_CITY) {
     glDisable (GL_CULL_FACE);
@@ -782,7 +810,19 @@ void RenderUpdate (void)
     glDisable (GL_BLEND);
   }
   EntityRender ();
-  LightRender ();
+  
+  if (!LOADING_SCREEN) {
+    elapsed = 3000 - WorldSceneElapsed ();
+    if (elapsed >= 0 && elapsed <= 3000) {
+      RenderFogFX ((float)elapsed / 3000.0f);
+      glDisable (GL_TEXTURE_2D);
+      glEnable (GL_BLEND);
+      glBlendFunc (GL_ONE, GL_ONE);
+      EntityRender ();
+    }
+  } 
+  if (EntityReady ())
+    LightRender ();
   CarRender ();
   if (show_wireframe) {
     glDisable (GL_TEXTURE_2D);
@@ -791,13 +831,11 @@ void RenderUpdate (void)
   }
   do_effects (effect);
   //Framerate tracker
-  if (show_fps) {
+  if (show_fps) 
     RenderPrint (1, "FPS=%d : Entities=%d : polys=%d", current_fps, EntityCount () + LightCount () + CarCount (), EntityPolyCount () + LightCount () + CarCount ());
-  }
   //Show the help overlay
   if (show_help)
     do_help ();
-  glDepthMask (true);
   SwapBuffers (hDC);
 
 }

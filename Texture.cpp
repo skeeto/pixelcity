@@ -149,8 +149,6 @@ public:
 
 static CTexture*    head;
 static bool         textures_done;
-static GLrgba       horizon_color;
-static GLrgba       cloud_color;
 static bool         prefix_used[PREFIX_COUNT];
 static bool         name_used[NAME_COUNT];
 static bool         suffix_used[SUFFIX_COUNT];
@@ -294,8 +292,6 @@ static void window (int x, int y, int size, int id, GLrgba color)
 
   margin = size / 3;
   half = size / 2;
-  //color = (color * 0.9f) + glRgba (RANDOM_COLOR_SHIFT, RANDOM_COLOR_SHIFT, RANDOM_COLOR_SHIFT);
-  //glColor3fv (&color.red);
   switch (id) {
   case TEXTURE_BUILDING1: //filled, 1-pixel frame
     drawrect (x + 1, y + 1, x + size - 1, y + size - 1, color);
@@ -343,7 +339,6 @@ static void window (int x, int y, int size, int id, GLrgba color)
 static void do_bloom (CTexture* t)
 {
 
-  LIMIT_INTERVAL (10);
   glBindTexture(GL_TEXTURE_2D, 0);		
   glViewport(0, 0, t->_size , t->_size);
   glCullFace (GL_BACK);
@@ -459,6 +454,7 @@ void CTexture::Rebuild ()
   int             name_num, prefix_num, suffix_num;
   int             max_size;
   float           radius;
+  float           grey;
   GLvector2       pos;
   GLrgba          color;
   bool            use_framebuffer;
@@ -467,20 +463,21 @@ void CTexture::Rebuild ()
   int             lapsed;
 
   start = GetTickCount ();
-  glBindTexture(GL_TEXTURE_2D, _glid);
-	glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, _size, _size, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  if (_clamp) {
-    glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  }
   //Since we make textures by drawing into the viewport, we can't make them bigger 
   //than the current view.
   _size = _desired_size;
   max_size = RenderMaxTextureSize ();
   while (_size > max_size)
     _size /= 2;
+  glBindTexture(GL_TEXTURE_2D, _glid);
+  //Set up the texture
+  glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, _size, _size, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  if (_clamp) {
+    glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  }
   //Set up our viewport so that drawing into our texture will be as easy 
   //as possible.  We make the viewport and projection simply match the given 
   //texture size. 
@@ -492,6 +489,7 @@ void CTexture::Rebuild ()
   glPushMatrix ();
   glLoadIdentity();
   glDisable (GL_CULL_FACE);
+  glDisable (GL_FOG);
   glBindTexture(GL_TEXTURE_2D, 0);
   glTranslatef(0, 0, -10.0f);
   glClearColor (0, 0, 0, _masked ? 0.0f : 1.0f);
@@ -581,7 +579,6 @@ void CTexture::Rebuild ()
     glEnd ();
     break;
   case TEXTURE_LIGHT:
-    //
     glEnable (GL_BLEND);
     glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     radius = ((float)_half) - 3;
@@ -686,7 +683,7 @@ void CTexture::Rebuild ()
           inv_scale = 1.0f - (scale);
 
           if (scale < 0.4f)
-            color = cloud_color;
+            color = WorldBloomColor () * 0.1f;
           else
             color = glRgba (0.0f);
           color.alpha = 1.0f;
@@ -721,12 +718,16 @@ void CTexture::Rebuild ()
       drawrect_simple (x + margin, y + margin * 2, x + TRIM_PIXELS - margin, y + TRIM_PIXELS - margin, glRgba (1.0f), glRgba (0.5f));
     break;
   case TEXTURE_SKY:
+    color = WorldBloomColor ();
+    grey = (color.red + color.green + color.blue) / 3.0f;
+    //desaturate, slightly dim
+    color = (color + glRgba (grey) * 2.0f) / 15.0f;
     glDisable (GL_BLEND);
     glBegin (GL_QUAD_STRIP);
     glColor3f (0,0,0);
     glVertex2i (0, _half);
     glVertex2i (_size, _half);
-    glColor3fv (&horizon_color.red);
+    glColor3fv (&color.red);
     glVertex2i (0, _size - 2);  
     glVertex2i (_size, _size - 2);  
     glEnd ();
@@ -796,16 +797,10 @@ unsigned TextureRandomBuilding (int index)
 void TextureReset (void)
 {
 
-  float   hue, sat;
-
   textures_done = false;
   build_time = 0;
   for (CTexture* t = head; t; t = t->_next)
     t->Clear ();
-  hue = 0.5f + (float)RandomVal (20) / 100.0f;
-  sat = 0.1f + (float)RandomVal (80) / 100.0f;
-  horizon_color = glRgbaFromHsl (hue, sat, 0.15f);
-  cloud_color  = glRgbaFromHsl (hue, 0.15f, 0.1f);
   ZeroMemory (prefix_used, sizeof (prefix_used));
   ZeroMemory (name_used, sizeof (name_used));
   ZeroMemory (suffix_used, sizeof (suffix_used));

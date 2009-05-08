@@ -5,6 +5,7 @@ void  RenderFlatToggle ();
 float RenderFogDistance ();
 bool  RenderFog ();
 void  RenderFogToggle ();
+void  RenderFogFX (float scalar);
 void  RenderFPSToggle ();
 void  RenderInit ();
 void  RenderLetterboxToggle ();

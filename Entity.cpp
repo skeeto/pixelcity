@@ -52,6 +52,7 @@ static int            polycount;
 static int            compile_x;
 static int            compile_y;
 static int            compile_count;
+static int            compile_end;
 
 /*-----------------------------------------------------------------------------
 
@@ -173,6 +174,7 @@ static void do_compile ()
     compile_y++;
     if (compile_y == GRID_SIZE)
       compiled = true;
+    compile_end = GetTickCount ();
   } 
   compile_count++;
 
@@ -199,7 +201,6 @@ float EntityProgress ()
 
   return (float)compile_count / (GRID_SIZE * GRID_SIZE);
 
-
 }
 
 
@@ -222,8 +223,11 @@ void EntityUpdate ()
   }
   //We want to do several cells at once. Enough to get things done, but
   //not so many that the program is unresponsive.
-  stop_time = GetTickCount () + 100;
-  while (!compiled && GetTickCount () < stop_time)
+  if (LOADING_SCREEN) {  //If we're using a loading screen, we want to build as fast as possible
+    stop_time = GetTickCount () + 100;
+    while (!compiled && GetTickCount () < stop_time)
+      do_compile ();
+  } else //Take it slow
     do_compile ();
 
 }
@@ -238,12 +242,21 @@ void EntityRender ()
   int       polymode[2];
   bool      wireframe;
   int       x, y;
+  int       elapsed;
 
   //Draw all textured objects
   glGetIntegerv (GL_POLYGON_MODE, &polymode[0]);
   wireframe = polymode[0] != GL_FILL;
   if (RenderFlat ())
     glDisable (GL_TEXTURE_2D);
+  //If we're not using a loading screen, make the wireframe fade out via fog
+  if (!LOADING_SCREEN && wireframe) {
+    elapsed = 6000 - WorldSceneElapsed ();
+    if (elapsed >= 0 && elapsed <= 6000)
+      RenderFogFX ((float)elapsed / 6000.0f);
+    else
+      return;
+  }
   for (x = 0; x < GRID_SIZE; x++) {
     for (y = 0; y < GRID_SIZE; y++) {
       if (Visible (x,y))

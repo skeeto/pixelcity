@@ -193,49 +193,14 @@ void AppUpdate ()
 {
 
   CameraUpdate ();
+  EntityUpdate ();
   WorldUpdate ();
   TextureUpdate ();
   VisibleUpdate ();
   CarUpdate ();
-  EntityUpdate ();
   RenderUpdate ();
 
 }
-
-/*-----------------------------------------------------------------------------
-
------------------------------------------------------------------------------*/
-
-void CALLBACK Appx (HWND hwnd, UINT uMsg, UINT idEvent, DWORD dwTime) 
-{
-
-  static int  ii;
-  //for (int i = 0; i < 1000;i++)
-  AppUpdate ();
-  ii++;
-  if (ii > 1)
-    ii++;
-  //PostQuitMessage (1);
-  //exit (1);
-
-}
-
-static void do_timer () 
-{
-
-  TIMECAPS  tc;
-  int       resolution;
-
-  if (timeGetDevCaps(&tc, sizeof(TIMECAPS)) != TIMERR_NOERROR) {
-      resolution = 0;
-  }
-  resolution = min(max(tc.wPeriodMin, 1), tc.wPeriodMax);
-  if (!timeSetEvent (1, resolution,(LPTIMECALLBACK)Appx, 123, TIME_PERIODIC | TIME_CALLBACK_FUNCTION ))
-      resolution = 0;
-
-}
-
-
 
 /*-----------------------------------------------------------------------------
 
@@ -445,7 +410,8 @@ LONG WINAPI ScreenSaverProc(HWND hwnd_in,UINT message,WPARAM wparam,LPARAM lpara
     break;
   case WM_CREATE:
     hwnd = hwnd_in;
-    AppInit ();
+    if (SCREENSAVER)
+      AppInit ();
     SetTimer (hwnd, 1, 7, NULL); 
     return 0;
   case WM_TIMER:
