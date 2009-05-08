@@ -200,7 +200,6 @@ void CDeco::CreateLightStrip (float x, float z, float width, float depth, float 
 
   GLvertex  p;
   int       index_list1[] = {0,1,3,2};
-  int       index_list2[] = {4,5,7,6};
   float     u, v;
   
   _color = color;
@@ -213,8 +212,6 @@ void CDeco::CreateLightStrip (float x, float z, float width, float depth, float 
     v = 1.0f;
     u = (float)((int)(width / depth));
   }
-  //u = MAX (width, 1);
-  //v = MAX (depth, 1);
   _texture = TextureId (TEXTURE_LIGHT);
   p.position = glVector (x, height, z);  p.uv = glVector (0.0f, 0.0f);
   _mesh->VertexAdd (p);
@@ -225,17 +222,7 @@ void CDeco::CreateLightStrip (float x, float z, float width, float depth, float 
   p.position = glVector (x + width, height, z);  p.uv = glVector (u, 0.0f);
   _mesh->VertexAdd (p);
 
-  p.position = glVector (x - 1, height, z - 1);  p.uv = glVector (0, 0);
-  _mesh->VertexAdd (p);
-  p.position = glVector (x - 1, height, z + depth + 1);  p.uv = glVector (0, 1);
-  _mesh->VertexAdd (p);
-  p.position = glVector (x + width + 1, height, z + depth + 1);  p.uv = glVector (1, 1);
-  _mesh->VertexAdd (p);
-  p.position = glVector (x + width + 1, height, z - 1);  p.uv = glVector (1, 0);
-  _mesh->VertexAdd (p);
-
   _mesh->QuadStripAdd (&index_list1[0], 4);
-  //_mesh->QuadStripAdd (&index_list2[0], 4);
   _mesh->Compile ();
 
 }
