@@ -16,12 +16,12 @@
 -----------------------------------------------------------------------------*/
 
 #include <windows.h>
-#include <gl\gl.h>
-#include <gl\glu.h>
-#include <gl\glaux.h>
-#include "glTypes.h"
+#include <GL/gl.h>
+#include <GL/glu.h>
 
-#include "mesh.h"
+#include <vector>
+#include "glTypes.h"
+#include "Mesh.h"
 
 /*-----------------------------------------------------------------------------
 
@@ -30,20 +30,9 @@
 CMesh::CMesh ()
 {
 
-  _vertex_count = 0;
-  _triangle_count = 0;
-  _quad_strip_count = 0;
-  _fan_count = 0;
-  _cube_count = 0;
-  _polycount = 0;
   _list = glGenLists(1);
   _compiled = false;
-  _vertex = NULL;
-  _normal = NULL;
-  _triangle = NULL;
-  _cube = NULL;
-  _quad_strip = NULL;
-  _fan = NULL;
+  _polycount = 0;
 
 }
 
@@ -54,24 +43,6 @@ CMesh::CMesh ()
 CMesh::~CMesh ()
 {
 
-  unsigned    i;
-  
-  if (_vertex)
-    free (_vertex);
-  if (_normal)
-    free (_normal);
-  if (_triangle)
-    free (_triangle);
-  if (_cube)
-    free (_cube);
-  for (i = 0; i < _quad_strip_count; i++) 
-    delete _quad_strip[i].index_list;
-  if (_quad_strip)
-    delete _quad_strip;
-  for (i = 0; i < _fan_count; i++) 
-    delete _fan[i].index_list;
-  if (_fan)
-    delete _fan;
   if (_list)
     glDeleteLists (_list, 1);
 
@@ -81,12 +52,10 @@ CMesh::~CMesh ()
 
 -----------------------------------------------------------------------------*/
 
-void CMesh::VertexAdd (GLvertex v)
+void CMesh::VertexAdd (const GLvertex& v)
 {
 
-  _vertex = (GLvertex*)realloc (_vertex, sizeof (GLvertex) * (_vertex_count + 1));
-  _vertex[_vertex_count] = v;
-  _vertex_count++;
+  _vertex.push_back(v);
 
 }
 
@@ -94,12 +63,10 @@ void CMesh::VertexAdd (GLvertex v)
 
 -----------------------------------------------------------------------------*/
 
-void CMesh::CubeAdd (int* index)
+void CMesh::CubeAdd (const cube& c)
 {
 
-  _cube = (cube*)realloc (_cube, sizeof (cube) * (_cube_count + 1));
-  memcpy (&_cube[_cube_count].index_list[0], index, sizeof (int) * 10);
-  _cube_count++;
+  _cube.push_back(c);
   _polycount += 5;
 
 }
@@ -108,15 +75,11 @@ void CMesh::CubeAdd (int* index)
 
 -----------------------------------------------------------------------------*/
 
-void CMesh::QuadStripAdd (int* index, int count)
+void CMesh::QuadStripAdd (const quad_strip& qs)
 {
 
-  _quad_strip = (quad_strip*)realloc (_quad_strip, sizeof (quad_strip) * (_quad_strip_count + 1));
-  _quad_strip[_quad_strip_count].index_list = (int*)malloc (sizeof (int) * count);
-  _quad_strip[_quad_strip_count].count = count;
-  memcpy (&_quad_strip[_quad_strip_count].index_list[0], &index[0], sizeof (int) * count);
-  _quad_strip_count++;
-  _polycount += (count - 2) / 2;
+  _quad_strip.push_back(qs);
+  _polycount += (qs.index_list.size() - 2) / 2;
 
 }
 
@@ -125,15 +88,11 @@ void CMesh::QuadStripAdd (int* index, int count)
 
 -----------------------------------------------------------------------------*/
 
-void CMesh::FanAdd (int* index, int count)
+void CMesh::FanAdd (const fan& f)
 {
 
-  _fan = (fan*)realloc (_fan, sizeof (fan) * (_fan_count + 1));
-  _fan[_fan_count].index_list = (int*)malloc (sizeof (int) * count);
-  _fan[_fan_count].count = count;
-  memcpy (&_fan[_fan_count].index_list[0], &index[0], sizeof (int) * count);
-  _fan_count++;
-  _polycount += count - 2;
+  _fan.push_back(f);
+  _polycount += f.index_list.size() - 2;
 
 }
 
@@ -145,55 +104,54 @@ void CMesh::FanAdd (int* index, int count)
 void CMesh::Render ()
 {
 
-  unsigned  i, n;
-  int*      index;
+  std::vector<quad_strip>::iterator qsi;
+  std::vector<cube>::iterator ci;
+  std::vector<fan>::iterator fi;
+  std::vector<int>::iterator n;
 
   if (_compiled) {
     glCallList (_list);
     return;
   }
-  for (i = 0; i < _quad_strip_count; i++) {
-    index = &_quad_strip[i].index_list[0];
+  for (qsi = _quad_strip.begin(); qsi < _quad_strip.end(); ++qsi) {
     glBegin (GL_QUAD_STRIP);
-    for (n = 0; n < _quad_strip[i].count; n++) {
-      glTexCoord2fv (&_vertex[index[n]].uv.x);
-      glVertex3fv (&_vertex[index[n]].position.x);
+    for (n = qsi->index_list.begin(); n < qsi->index_list.end(); ++n) {
+      glTexCoord2fv (&_vertex[*n].uv.x);
+      glVertex3fv (&_vertex[*n].position.x);
     }
     glEnd ();
   }
-  for (i = 0; i < _cube_count; i++) {
-    index = &_cube[i].index_list[0];
+  for (ci = _cube.begin(); ci < _cube.end(); ++ci) {
     glBegin (GL_QUAD_STRIP);
-    for (n = 0; n < 10; n++) {
-      glTexCoord2fv (&_vertex[index[n]].uv.x);
-      glVertex3fv (&_vertex[index[n]].position.x);
+    for (n = ci->index_list.begin(); n < ci->index_list.end(); ++n) {
+      glTexCoord2fv (&_vertex[*n].uv.x);
+      glVertex3fv (&_vertex[*n].position.x);
     }
     glEnd ();
     
     glBegin (GL_QUADS);
-    glTexCoord2fv (&_vertex[index[7]].uv.x);
-    glVertex3fv (&_vertex[index[7]].position.x);
-    glVertex3fv (&_vertex[index[5]].position.x);
-    glVertex3fv (&_vertex[index[3]].position.x);
-    glVertex3fv (&_vertex[index[1]].position.x);
+    glTexCoord2fv (&_vertex[ci->index_list[7]].uv.x);
+    glVertex3fv (&_vertex[ci->index_list[7]].position.x);
+    glVertex3fv (&_vertex[ci->index_list[5]].position.x);
+    glVertex3fv (&_vertex[ci->index_list[3]].position.x);
+    glVertex3fv (&_vertex[ci->index_list[1]].position.x);
     glEnd ();
     
     glBegin (GL_QUADS);
-    glTexCoord2fv (&_vertex[index[6]].uv.x);
-    glVertex3fv (&_vertex[index[0]].position.x);
-    glVertex3fv (&_vertex[index[2]].position.x);
-    glVertex3fv (&_vertex[index[4]].position.x);
-    glVertex3fv (&_vertex[index[6]].position.x);
+    glTexCoord2fv (&_vertex[ci->index_list[6]].uv.x);
+    glVertex3fv (&_vertex[ci->index_list[0]].position.x);
+    glVertex3fv (&_vertex[ci->index_list[2]].position.x);
+    glVertex3fv (&_vertex[ci->index_list[4]].position.x);
+    glVertex3fv (&_vertex[ci->index_list[6]].position.x);
     glEnd ();
 
   
   }
-  for (i = 0; i < _fan_count; i++) {
-    index = &_fan[i].index_list[0];
+  for (fi = _fan.begin(); fi < _fan.end(); ++fi) {
     glBegin (GL_TRIANGLE_FAN);
-    for (n = 0; n < _fan[i].count; n++) {
-      glTexCoord2fv (&_vertex[index[n]].uv.x);
-      glVertex3fv (&_vertex[index[n]].position.x);
+    for (n = fi->index_list.begin(); n < fi->index_list.end(); ++n) {
+      glTexCoord2fv (&_vertex[*n].uv.x);
+      glVertex3fv (&_vertex[*n].position.x);
     }
     glEnd ();
   }

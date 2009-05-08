@@ -157,7 +157,7 @@ void CBuilding::ConstructCube (int left, int right, int front, int back, int bot
   GLvertex    p[10];
   float       x1, x2, z1, z2, y1, y2;
   int         i;
-  int         index_list[10];
+  cube        c;
   float       u, v1, v2;
   float       mapping;
   int         base_index;
@@ -194,10 +194,9 @@ void CBuilding::ConstructCube (int left, int right, int front, int back, int bot
   for (i = 0; i < 10; i++) {
     p[i].uv.x = (p[i].position.x + p[i].position.z) / (float)SEGMENTS_PER_TEXTURE;
     _mesh->VertexAdd (p[i]);
-    index_list[i] = base_index + i;
+    c.index_list.push_back(base_index + i);
   }
-  _mesh->CubeAdd (&index_list[0]);
-
+  _mesh->CubeAdd (c);
 
 }
 
@@ -211,7 +210,7 @@ void CBuilding::ConstructCube (float left, float right, float front, float back,
   GLvertex    p[10];
   float       x1, x2, z1, z2, y1, y2;
   int         i;
-  int         index_list[10];
+  cube        c;
   int         base_index;
 
   x1 = left;
@@ -235,10 +234,9 @@ void CBuilding::ConstructCube (float left, float right, float front, float back,
   for (i = 0; i < 10; i++) {
     p[i].uv.x = (p[i].position.x + p[i].position.z) / (float)SEGMENTS_PER_TEXTURE;
     _mesh_flat->VertexAdd (p[i]);
-    index_list[i] = base_index + i;
+    c.index_list.push_back(base_index + i);
   }
-  _mesh_flat->CubeAdd (&index_list[0]);
-
+  _mesh_flat->CubeAdd (c);
 
 }
 
@@ -362,13 +360,13 @@ void CBuilding::ConstructSpike (int left, int right, int front, int back, int bo
 {
 
   GLvertex    p;
-  int         index_list[6];
+  fan         f;
   int         i;
   GLvector    center;
 
   for (i = 0; i < 5; i++)
-    index_list[i] = _mesh_flat->VertexCount () + i;
-  index_list[5] = index_list[1];
+    f.index_list.push_back(_mesh_flat->VertexCount () + i);
+  f.index_list.push_back(f.index_list[1]);
   p.uv = glVector (0.0f, 0.0f);
   center.x = ((float)left + (float)right) / 2.0f;
   center.z = ((float)front + (float)back) / 2.0f;
@@ -387,7 +385,7 @@ void CBuilding::ConstructSpike (int left, int right, int front, int back, int bo
   p.position = glVector ((float)left, (float)bottom, (float)front);
   _mesh_flat->VertexAdd (p);
   
-  _mesh_flat->FanAdd (&index_list[0], 6);
+  _mesh_flat->FanAdd (f);
 
 }
 
@@ -406,14 +404,15 @@ float CBuilding::ConstructWall (int start_x, int start_y, int start_z, int direc
   int         x, z;
   int         step_x, step_z;
   int         i;
-  int         index_list[100];
-  int         current_index;
+  quad_strip  qs;
   int         column;
   int         mid;
   int         odd;
   GLvertex    v;
   bool        blank;
   bool        last_blank;
+
+  qs.index_list.reserve(100);
 
   switch (direction) {
   case NORTH:
@@ -427,7 +426,6 @@ float CBuilding::ConstructWall (int start_x, int start_y, int start_z, int direc
   }
   x = start_x;;
   z = start_z;
-  current_index = 0;
   mid = (length / 2) - 1;
   odd = 1 - (length % 2);
   if (length % 2) 
@@ -452,13 +450,11 @@ float CBuilding::ConstructWall (int start_x, int start_y, int start_z, int direc
       v.position = glVector ((float)x, (float)start_y, (float)z);
       v.uv.y = (float)start_y / SEGMENTS_PER_TEXTURE;
       _mesh->VertexAdd (v);
-      index_list[current_index] = _mesh->VertexCount () - 1;
-      current_index++;
+      qs.index_list.push_back(_mesh->VertexCount () - 1);
       v.position.y = (float)(start_y + height);
       v.uv.y = (float)(start_y + height) / SEGMENTS_PER_TEXTURE;;
       _mesh->VertexAdd (v);
-      index_list[current_index] = _mesh->VertexCount () - 1;
-      current_index++;
+      qs.index_list.push_back(_mesh->VertexCount () - 1);
     }
     //if (!blank && i != 0 && i != (length - 1))
     if (!blank && i != length)
@@ -466,12 +462,10 @@ float CBuilding::ConstructWall (int start_x, int start_y, int start_z, int direc
     x += step_x;
     z += step_z;
   }
-  _mesh->QuadStripAdd (&index_list[0], current_index);  
+  _mesh->QuadStripAdd (qs);  
   return v.uv.x;
 
 }
-
-static int maxt;
 
 /*-----------------------------------------------------------------------------
 
@@ -524,9 +518,6 @@ void CBuilding::CreateBlocky ()
     max_tiers = 2;
   else
     max_tiers = 1;
-  max_tiers = MIN (maxt, max_tiers);
-  maxt++;
-  maxt %= 8;
   //We begin at the top of the building, and work our way down.
   //Viewed from above, the sections of the building are randomly sized
   //rectangles that ALWAYS include the center of the building somewhere within 
@@ -588,10 +579,13 @@ void CBuilding::CreateSimple ()
 
   GLvertex    p;
   float       x1, x2, z1, z2, y1, y2;
-  int         index_list[] = {0,1,2,3,4,5,6,7,8,9,10};
+  quad_strip  qs;
   float       u, v1, v2;
   float       cap_height;
   float       ledge;
+
+  for(int i=0; i<=10; i++)
+    qs.index_list.push_back(i);
 
   //How tall the flat-color roof is
   cap_height = (float)(1 + RandomVal (4));
@@ -638,11 +632,12 @@ void CBuilding::CreateSimple ()
   p.position = glVector (x1, y2, z1);  p.uv = glVector (u, v2);
   _mesh->VertexAdd (p);
 
-  _mesh->QuadStripAdd (index_list, 10);
+  _mesh->QuadStripAdd (qs);
   ConstructCube (x1 - ledge, x2 + ledge, z2 - ledge, z1 + ledge, (float)_height, (float)_height + cap_height);
   _mesh->Compile ();
 
 }
+
 
 /*-----------------------------------------------------------------------------
 
@@ -664,11 +659,13 @@ void CBuilding::CreateModern ()
   int         half_depth, half_width;
   float       dist;
   float       length;
-  int*        index_list;
+  quad_strip  qs;
+  fan         f;
   int         points;
   int         skip_interval;
   int         skip_counter;
   int         skip_delta;
+  int         i;
   bool        logo_done;
   bool        do_trim;
   CDeco*      d;
@@ -735,21 +732,20 @@ void CBuilding::CreateModern ()
     d = new CDeco;
     d->CreateLightTrim (vector_buffer, (points / 2) - 2, (float)cap_height / 2, _seed, RANDOM_COLOR);
   }
-  index_list = new int[points];   
+  qs.index_list.reserve(points);   
   //Add the outer walls
-  for (int i = 0; i < points; i++)
-    index_list[i] = i;
-  _mesh->QuadStripAdd (index_list, points);
-  _mesh_flat->QuadStripAdd (index_list, points);
+  for (i = 0; i < points; i++)
+    qs.index_list.push_back(i);
+  _mesh->QuadStripAdd (qs);
+  _mesh_flat->QuadStripAdd (qs);
   //add the fan to cap the top of the buildings
+  f.index_list.push_back(points);
   for (i = 0; i < points / 2; i++)
-    index_list[i + 1] = points - (1 + i * 2);
+    f.index_list.push_back(points - (1 + i * 2));
   p.position.x = _center.x;
   p.position.z = _center.z;
   _mesh_flat->VertexAdd (p);
-  index_list[0] = points;
-  _mesh_flat->FanAdd (index_list, 1 + points / 2);
-  delete index_list;
+  _mesh_flat->FanAdd (f);
   radius /= 2.0f;
   //ConstructRoof ((int)(_center.x - radius), (int)(_center.x + radius), (int)(_center.z - radius), (int)(_center.z + radius), _height + cap_height);
   _mesh->Compile ();

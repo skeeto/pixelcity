@@ -1,50 +1,43 @@
 
+#include <vector>
 
 struct cube
 {
-  int         index_list[10];
+  std::vector<int> index_list;   // probably always .size() == 10...
 };
 
 struct quad_strip
 {
-  int*        index_list;
-  unsigned    count;
+  std::vector<int> index_list;
 };
 
 struct fan
 {
-  int*        index_list;
-  unsigned    count;
+  std::vector<int> index_list;
 };
 
 class CMesh
 {
 public:
-              CMesh ();
-              ~CMesh ();
-  unsigned    _vertex_count;
-  unsigned    _triangle_count;
-  unsigned    _cube_count;
-  unsigned    _quad_strip_count;
-  unsigned    _fan_count;
-  unsigned    _normal_count;
-  unsigned    _list;
-  int         _polycount;
-  GLvertex*   _vertex;  
-  GLvector*   _normal;
-  GLtriangle* _triangle;
-  cube*       _cube;
-  quad_strip* _quad_strip;
-  fan*        _fan;
-  bool        _compiled;
+                          CMesh ();
+                          ~CMesh ();
+  unsigned                _list;
+  int                     _polycount;
+  std::vector<GLvertex>   _vertex;  
+  std::vector<GLvector>   _normal;
+  std::vector<GLtriangle> _triangle;
+  std::vector<cube>       _cube;
+  std::vector<quad_strip> _quad_strip;
+  std::vector<fan>        _fan;
+  bool                    _compiled;
 
-  void        NormalAdd (GLvector n);
-  void        VertexAdd (GLvertex v);
-  int         VertexCount () { return _vertex_count; }
+  void        NormalAdd (const GLvector& n);
+  void        VertexAdd (const GLvertex& v);
+  int         VertexCount () { return _vertex.size(); }
   int         PolyCount () { return _polycount; }
-  void        CubeAdd (int* index);
-  void        QuadStripAdd (int* index, int count);
-  void        FanAdd (int* index, int count);
+  void        CubeAdd (const cube& c);
+  void        QuadStripAdd (const quad_strip& qs);
+  void        FanAdd (const fan& f);
   void        Render ();
   void        Compile ();
 

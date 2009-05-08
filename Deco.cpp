@@ -121,7 +121,10 @@ void CDeco::CreateRadioTower (GLvector pos, float height)
   CLight*   l;
   float     offset;
   GLvertex  v;
-  int       index_list[] = {0,1,2,3,4,5};
+  fan       f;
+
+  for(int i=0; i<6; i++)
+    f.index_list.push_back(i);
 
   offset = height / 15.0f;
   _center = pos;
@@ -139,7 +142,7 @@ void CDeco::CreateRadioTower (GLvector pos, float height)
   _mesh->VertexAdd (v);
   v.position = glVector (_center.x - offset, _center.y, _center.z - offset);  v.uv = glVector (1,0);
   _mesh->VertexAdd (v);
-  _mesh->FanAdd (&index_list[0], 6);
+  _mesh->FanAdd (f);
   l = new CLight (glVector (_center.x, _center.y + height + 1.0f, _center.z), glRgba (255,192,160), 1);
   l->Blink ();
   _texture = TextureId (TEXTURE_LATTICE);
@@ -153,15 +156,20 @@ void CDeco::CreateRadioTower (GLvector pos, float height)
 void CDeco::CreateLogo (GLvector2 start, GLvector2 end, float bottom, int seed, GLrgba color)
 {
 
-  GLvertex  p;
-  int       index_list[] = {0,1,3,2};
-  float     u1, u2, v1, v2;
-  float     top;
-  float     height, length;
-  GLvector2 center2d;
-  GLvector  to;
-  GLvector  out;
-  int       logo_index;
+  GLvertex   p;
+  quad_strip qs;
+  float      u1, u2, v1, v2;
+  float      top;
+  float      height, length;
+  GLvector2  center2d;
+  GLvector   to;
+  GLvector   out;
+  int        logo_index;
+
+  qs.index_list.push_back(0);
+  qs.index_list.push_back(1);
+  qs.index_list.push_back(3);
+  qs.index_list.push_back(2);
 
   _use_alpha = true;
   _color = color;
@@ -186,7 +194,7 @@ void CDeco::CreateLogo (GLvector2 start, GLvector2 end, float bottom, int seed, 
   _mesh->VertexAdd (p);
   p.position = glVector (start.x, top, start.y) + out;  p.uv = glVector (u1, v2);
   _mesh->VertexAdd (p);
-  _mesh->QuadStripAdd (&index_list[0], 4);
+  _mesh->QuadStripAdd (qs);
   _texture = TextureId (TEXTURE_LOGOS);
 
 }
@@ -198,10 +206,14 @@ void CDeco::CreateLogo (GLvector2 start, GLvector2 end, float bottom, int seed, 
 void CDeco::CreateLightStrip (float x, float z, float width, float depth, float height, GLrgba color)
 {
 
-  GLvertex  p;
-  int       index_list1[] = {0,1,3,2};
-  float     u, v;
+  GLvertex   p;
+  quad_strip qs1;
+  float      u, v;
   
+  qs1.index_list.push_back(0);
+  qs1.index_list.push_back(1);
+  qs1.index_list.push_back(3);
+  qs1.index_list.push_back(2);
   _color = color;
   _use_alpha = true;
   _center = glVector (x + width / 2, height, z + depth / 2);
@@ -221,8 +233,7 @@ void CDeco::CreateLightStrip (float x, float z, float width, float depth, float 
   _mesh->VertexAdd (p);
   p.position = glVector (x + width, height, z);  p.uv = glVector (u, 0.0f);
   _mesh->VertexAdd (p);
-
-  _mesh->QuadStripAdd (&index_list1[0], 4);
+  _mesh->QuadStripAdd (qs1);
   _mesh->Compile ();
 
 }
@@ -234,19 +245,19 @@ void CDeco::CreateLightStrip (float x, float z, float width, float depth, float 
 void CDeco::CreateLightTrim (GLvector* chain, int count, float height, int seed, GLrgba color)
 {
 
-  GLvertex  p;
-  GLvector  to;
-  GLvector  out;
-  int       i;
-  int       index;
-  int       prev, next;
-  float     u, v1, v2;
-  float     row;
-  int*      index_list;
+  GLvertex   p;
+  GLvector   to;
+  GLvector   out;
+  int        i;
+  int        index;
+  int        prev, next;
+  float      u, v1, v2;
+  float      row;
+  quad_strip qs;
 
   _color = color;
   _center = glVector (0.0f, 0.0f, 0.0f);
-  index_list = new int[count * 2 + 2];
+  qs.index_list.reserve(count * 2 + 2);
   for (i = 0; i < count; i++) 
     _center += chain[i];
   _center /= (float)count;
@@ -267,18 +278,14 @@ void CDeco::CreateLightTrim (GLvector* chain, int count, float height, int seed,
     out = glVectorCrossProduct (glVector (0.0f, 1.0f, 0.0f), to) * LOGO_OFFSET;
     p.position = chain[i % count] + out; p.uv = glVector (u, v2);
     _mesh->VertexAdd (p);
-    index_list[index] = index;
-    index++;
+    qs.index_list.push_back(index++);
     //Top point
     p.position.y += height;p.uv = glVector (u, v1);
     _mesh->VertexAdd (p);
-    index_list[index] = index;
-    index++;
+    qs.index_list.push_back(index++);
   }
-  _mesh->QuadStripAdd (index_list, index);
-  delete index_list;
+  _mesh->QuadStripAdd (qs);
   _texture = TextureId (TEXTURE_TRIM);
   _mesh->Compile ();
-   
 
 }

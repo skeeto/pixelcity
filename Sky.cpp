@@ -64,13 +64,13 @@ void CSky::Render ()
 
   GLvector    angle, position;
 
-  if (!RenderFog ())
+  if (!TextureReady ())
     return;
   glDepthMask (false);
   glPushAttrib (GL_POLYGON_BIT | GL_FOG_BIT);
   glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
-  glDisable (GL_FOG);
   glDisable (GL_CULL_FACE);
+  glDisable (GL_FOG);
   glPushMatrix ();
   glLoadIdentity();
   angle = CameraAngle ();
