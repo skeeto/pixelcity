@@ -220,7 +220,6 @@ static void do_effects (int type)
   if (!TextureReady ())
     return;
   //Now change projection modes so we can render full-screen effects
-  glDisable(GL_DEPTH_TEST);
   glMatrixMode (GL_PROJECTION);
   glPushMatrix ();
   glLoadIdentity ();
@@ -235,6 +234,8 @@ static void do_effects (int type)
   //Render full-screen effects
   glBlendFunc (GL_ONE, GL_ONE);
   glEnable (GL_TEXTURE_2D);
+  glDisable(GL_DEPTH_TEST);
+  glDepthMask (false);
   glBindTexture(GL_TEXTURE_2D, TextureId (TEXTURE_BLOOM));
   switch (type) {
   case EFFECT_DEBUG:
@@ -410,19 +411,20 @@ void RenderPrint (int line, const char *fmt, ...)
   va_start (ap, fmt);		
   vsprintf (text, fmt, ap);				
   va_end (ap);		
-  glDepthMask (false);
   glMatrixMode (GL_PROJECTION);
   glPushMatrix ();
   glLoadIdentity ();
   glOrtho (0, render_width, render_height, 0, 0.1f, 2048);
   glDisable(GL_DEPTH_TEST);
+  glDepthMask (false);
 	glMatrixMode (GL_MODELVIEW);
   glPushMatrix ();
   glLoadIdentity();
   glTranslatef(0, 0, -1.0f);				
-  glEnable (GL_BLEND);
+  glDisable (GL_BLEND);
+  glDisable (GL_FOG);
+  glDisable (GL_TEXTURE_2D);
   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glDisable (GL_DEPTH_TEST);
   RenderPrint (0, line * FONT_SIZE - 2, 0, glRgba (0.0f), text);
   RenderPrint (4, line * FONT_SIZE + 2, 0, glRgba (0.0f), text);
   RenderPrint (2, line * FONT_SIZE, 0, glRgba (1.0f), text);
@@ -810,7 +812,6 @@ void RenderUpdate (void)
     glDisable (GL_BLEND);
   }
   EntityRender ();
-  
   if (!LOADING_SCREEN) {
     elapsed = 3000 - WorldSceneElapsed ();
     if (elapsed >= 0 && elapsed <= 3000) {
