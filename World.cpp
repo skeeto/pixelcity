@@ -21,6 +21,7 @@
 #include <gl\glaux.h>
 #include <math.h>
 #include <time.h>
+#include <vector>
 
 #include "glTypes.h"
 #include "building.h"
@@ -38,6 +39,8 @@
 #include "visible.h"
 #include "win.h"
 #include "world.h"
+
+using namespace std;
 
 struct plot
 {
@@ -407,7 +410,7 @@ static void do_reset (void)
   float     west_street, north_street, east_street, south_street;
 
   //Re-init Random to make the same city each time. Helpful when running tests.
-  //RandomInit (6);
+  RandomInit (6);
   reset_needed = false;
   broadway_done = false;
   skyscrapers = 0;
@@ -555,6 +558,7 @@ static void do_reset (void)
     if (x < WORLD_EDGE || x > WORLD_SIZE - WORLD_EDGE) 
       x += 28;
   }
+  
 
 }
 
@@ -660,7 +664,7 @@ void WorldRender ()
   glDisable (GL_BLEND);
   glEnable (GL_TEXTURE_2D);
   glColor3f (1,1,1);
-  glBindTexture (GL_TEXTURE_2D, TextureId (TEXTURE_GROUND));
+  glBindTexture (GL_TEXTURE_2D, 0);
   glBegin (GL_QUADS);
   glTexCoord2f (0, 0);   glVertex3f ( 0., 0, 0);
   glTexCoord2f (0, 1);   glVertex3f ( 0, 0,  1024);

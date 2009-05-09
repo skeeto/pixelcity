@@ -82,10 +82,6 @@ void CSky::Render ()
   glEnable (GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D, TextureId (TEXTURE_SKY));
   glCallList (m_list);
-  glEnable (GL_BLEND);
-  glBindTexture(GL_TEXTURE_2D, TextureId (TEXTURE_CLOUDS));
-  glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glCallList (m_list);
   glPopMatrix ();
   glPopAttrib ();
   glDepthMask (true);
