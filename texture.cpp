@@ -26,11 +26,11 @@
 #include <windows.h>
 #include <stdio.h>
 #include <math.h>
-#include <gl\gl.h>
-#include <gl\glu.h>
-#include <gl\glaux.h>
+#include <gl/gl.h>
+#include <gl/glu.h>
+#include <gl/glaux.h>
 
-#include "gltypes.h"
+#include "glTypes.h"
 #include "building.h"
 #include "camera.h"
 #include "car.h"

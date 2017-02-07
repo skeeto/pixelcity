@@ -21,7 +21,7 @@
 
 #include <vector>
 #include "glTypes.h"
-#include "Mesh.h"
+#include "mesh.h"
 
 /*-----------------------------------------------------------------------------
 

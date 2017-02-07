@@ -28,10 +28,10 @@
 #include <stdarg.h>
 #include <math.h>
 
-#include <gl\gl.h>
-#include <gl\glu.h>
+#include <gl/gl.h>
+#include <gl/glu.h>
 
-#include "gltypes.h"
+#include "glTypes.h"
 #include "entity.h"
 #include "car.h"
 #include "camera.h"
