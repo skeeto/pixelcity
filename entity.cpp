@@ -16,7 +16,7 @@
 
 #include <windows.h>
 #include <math.h>
-#include <gl/gl.h>
+#include <GL/gl.h>
 
 #include "camera.h"
 #include "entity.h"

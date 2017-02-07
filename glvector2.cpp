@@ -13,7 +13,7 @@
 #include <windows.h>
 #include <float.h>
 #include <math.h>
-#include <gl/gl.h>
+#include <GL/gl.h>
 
 #include "glTypes.h"
 #include "math.h"

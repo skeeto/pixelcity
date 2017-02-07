@@ -14,7 +14,7 @@
 
 #include <windows.h>
 #include <math.h>
-#include <gl/gl.h>
+#include <GL/gl.h>
 #include "glTypes.h"
 
 #include "building.h"

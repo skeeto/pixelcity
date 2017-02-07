@@ -15,9 +15,9 @@
 
 #include <windows.h>
 #include <math.h>
-#include <gl/gl.h>
-#include <gl/glu.h>
-#include <gl/glaux.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glaux.h>
 #include "glTypes.h"
 
 #include "deco.h"
