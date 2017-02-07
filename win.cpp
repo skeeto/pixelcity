@@ -56,7 +56,7 @@ static POINT        mouse_pos;
 static bool         quit;
 static HINSTANCE    instance;
 
-LONG WINAPI ScreenSaverProc (HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+LRESULT WINAPI ScreenSaverProc (HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 /*-----------------------------------------------------------------------------
 
@@ -271,7 +271,7 @@ BOOL WINAPI RegisterDialogClasses(HANDLE hInst) { return TRUE; }
 
 #endif
 
-LONG WINAPI ScreenSaverProc(HWND hwnd_in,UINT message,WPARAM wparam,LPARAM lparam)
+LRESULT WINAPI ScreenSaverProc(HWND hwnd_in,UINT message,WPARAM wparam,LPARAM lparam)
 {
 
   RECT            r;
