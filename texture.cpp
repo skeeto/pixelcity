@@ -5,14 +5,14 @@
   2009 Shamus Young
 
 -------------------------------------------------------------------------------
-  
-  This procedurally builds all of the textures.  
 
-  I apologize in advance for the apalling state of this module. It's the victim 
+  This procedurally builds all of the textures.
+
+  I apologize in advance for the apalling state of this module. It's the victim
   of iterative and experimental development.  It has cruft, poorly named
   functions, obscure code, poorly named variables, and is badly organized. Even
   the formatting sucks in places. Its only saving grace is that it works.
-  
+
 -----------------------------------------------------------------------------*/
 
 #define RANDOM_COLOR_SHIFT  ((float)(RandomVal (10)) / 50.0f)
@@ -43,9 +43,9 @@
 #include "world.h"
 #include "win.h"
 
-static char*        prefix[] = 
+static char*        prefix[] =
 {
-  "i", 
+  "i",
   "Green ",
   "Mega",
   "Super ",
@@ -53,14 +53,14 @@ static char*        prefix[] =
   "e",
   "Hyper",
   "Global ",
-  "Vital", 
+  "Vital",
   "Next ",
   "Pacific ",
   "Metro",
   "Unity ",
   "G-",
   "Trans",
-  "Infinity ", 
+  "Infinity ",
   "Superior ",
   "Monolith ",
   "Best ",
@@ -70,7 +70,7 @@ static char*        prefix[] =
   "National ",
 };
 
-static char*        name[] = 
+static char*        name[] =
 {
   "Biotic",
   "Info",
@@ -103,11 +103,11 @@ static char*        name[] =
   "Bank",
   "Imports",
   "Apparel",
-  "Petroleum", 
+  "Petroleum",
   "Studios",
 };
 
-static char*        suffix[] = 
+static char*        suffix[] =
 {
   "Corp",
   " Inc.",
@@ -125,7 +125,7 @@ static char*        suffix[] =
   " One",
   " LLC"
 };
-  
+
 class CTexture
 {
 public:
@@ -157,7 +157,7 @@ static bool         suffix_used[SUFFIX_COUNT];
 static int          build_time;
 
 /*-----------------------------------------------------------------------------
-                          
+
 -----------------------------------------------------------------------------*/
 
 void drawrect_simple (int left, int top, int right, int bottom, GLrgba color)
@@ -175,7 +175,7 @@ void drawrect_simple (int left, int top, int right, int bottom, GLrgba color)
 
 
 /*-----------------------------------------------------------------------------
-                          
+
 -----------------------------------------------------------------------------*/
 
 void drawrect_simple (int left, int top, int right, int bottom, GLrgba color1, GLrgba color2)
@@ -196,7 +196,7 @@ void drawrect_simple (int left, int top, int right, int bottom, GLrgba color1, G
 
 
 /*-----------------------------------------------------------------------------
-                          
+
 -----------------------------------------------------------------------------*/
 
 void drawrect (int left, int top, int right, int bottom, GLrgba color)
@@ -282,7 +282,7 @@ void drawrect (int left, int top, int right, int bottom, GLrgba color)
 }
 
 /*-----------------------------------------------------------------------------
-                          
+
 -----------------------------------------------------------------------------*/
 
 static void window (int x, int y, int size, int id, GLrgba color)
@@ -335,13 +335,13 @@ static void window (int x, int y, int size, int id, GLrgba color)
 }
 
 /*-----------------------------------------------------------------------------
-                          
+
 -----------------------------------------------------------------------------*/
 
 static void do_bloom (CTexture* t)
 {
 
-  glBindTexture(GL_TEXTURE_2D, 0);		
+  glBindTexture(GL_TEXTURE_2D, 0);
   glViewport(0, 0, t->_size , t->_size);
   glCullFace (GL_BACK);
   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -361,20 +361,20 @@ static void do_bloom (CTexture* t)
   EntityRender ();
   CarRender ();
   LightRender ();
-  glBindTexture(GL_TEXTURE_2D, t->_glid);		
+  glBindTexture(GL_TEXTURE_2D, t->_glid);
   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, t->_size, t->_size, 0);
+  glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, t->_size, t->_size, 0);
 
 }
 
 /*-----------------------------------------------------------------------------
-                          
+
 -----------------------------------------------------------------------------*/
 
 CTexture::CTexture (int id, int size, bool mipmap, bool clamp, bool masked)
 {
 
-  glGenTextures (1, &_glid); 
+  glGenTextures (1, &_glid);
   _my_id = id;
   _mipmap = mipmap;
   _clamp = clamp;
@@ -391,12 +391,12 @@ CTexture::CTexture (int id, int size, bool mipmap, bool clamp, bool masked)
 
 /*-----------------------------------------------------------------------------
 
-  This draws all of the windows on a building texture. lit_density controls 
-  how many lights are on. (1 in n chance that the light is on. Higher values 
-  mean less lit windows. run_length controls how often it will consider 
+  This draws all of the windows on a building texture. lit_density controls
+  how many lights are on. (1 in n chance that the light is on. Higher values
+  mean less lit windows. run_length controls how often it will consider
   changing the lit / unlit status. 1 produces a complete scatter, higher
   numbers make long strings of lights.
-  
+
 -----------------------------------------------------------------------------*/
 
 void CTexture::DrawWindows ()
@@ -427,9 +427,9 @@ void CTexture::DrawWindows ()
         //if (lit)
           //color = glRgba (0.5f + (float)(RandomVal () % 128) / 256.0f) + glRgba (RANDOM_COLOR_SHIFT, RANDOM_COLOR_SHIFT, RANDOM_COLOR_SHIFT);
       }
-      if (lit) 
+      if (lit)
         color = glRgba (0.5f + (float)(RandomVal () % 128) / 256.0f) + glRgba (RANDOM_COLOR_SHIFT, RANDOM_COLOR_SHIFT, RANDOM_COLOR_SHIFT);
-       else 
+       else
         color = glRgba ((float)(RandomVal () % 40) / 256.0f);
       window (x * _segment_size, y * _segment_size, _segment_size, _my_id, color);
       run--;
@@ -466,11 +466,11 @@ void CTexture::DrawSky ()
   glVertex2i (0, _half);
   glVertex2i (_size, _half);
   glColor3fv (&color.red);
-  glVertex2i (0, _size - 2);  
-  glVertex2i (_size, _size - 2);  
+  glVertex2i (0, _size - 2);
+  glVertex2i (_size, _size - 2);
   glEnd ();
   //Draw a bunch of little faux-buildings on the horizon.
-  for (i = 0; i < _size; i += 5) 
+  for (i = 0; i < _size; i += 5)
     drawrect (i, _size - RandomVal (8) - RandomVal (8) - RandomVal (8), i + RandomVal (9), _size, glRgba (0.0f));
   //Draw the clouds
   for (i = _size - 30; i > 5; i -= 2) {
@@ -562,11 +562,11 @@ void CTexture::DrawHeadlight ()
 
 /*-----------------------------------------------------------------------------
 
-  Here is where ALL of the procedural textures are created.  It's filled with 
-  obscure logic, magic numbers, and messy code. Part of this is because 
-  there is a lot of "art" being done here, and lots of numbers that could be 
+  Here is where ALL of the procedural textures are created.  It's filled with
+  obscure logic, magic numbers, and messy code. Part of this is because
+  there is a lot of "art" being done here, and lots of numbers that could be
   endlessly tweaked.  Also because I'm lazy.
-                    
+
 -----------------------------------------------------------------------------*/
 
 void CTexture::Rebuild ()
@@ -584,7 +584,7 @@ void CTexture::Rebuild ()
   int             lapsed;
 
   start = GetTickCount ();
-  //Since we make textures by drawing into the viewport, we can't make them bigger 
+  //Since we make textures by drawing into the viewport, we can't make them bigger
   //than the current view.
   _size = _desired_size;
   max_size = RenderMaxTextureSize ();
@@ -599,14 +599,14 @@ void CTexture::Rebuild ()
     glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   }
-  //Set up our viewport so that drawing into our texture will be as easy 
-  //as possible.  We make the viewport and projection simply match the given 
-  //texture size. 
+  //Set up our viewport so that drawing into our texture will be as easy
+  //as possible.  We make the viewport and projection simply match the given
+  //texture size.
   glViewport(0, 0, _size , _size);
   glMatrixMode (GL_PROJECTION);
   glLoadIdentity ();
   glOrtho (0, _size, _size, 0, 0.1f, 2048);
-	glMatrixMode (GL_MODELVIEW);
+  glMatrixMode (GL_MODELVIEW);
   glPushMatrix ();
   glLoadIdentity();
   glDisable (GL_CULL_FACE);
@@ -628,18 +628,18 @@ void CTexture::Rebuild ()
     glVertex2i (0, 0);  glVertex2i (_size, 0);//vertical
     glEnd ();
     glBegin (GL_LINE_STRIP);
-    glVertex2i (0, 0);    
+    glVertex2i (0, 0);
     for (i = 0; i < _size; i += 9) {
       if (i % 2)
-        glVertex2i (0, i);    
+        glVertex2i (0, i);
       else
-        glVertex2i (i, i);    
+        glVertex2i (i, i);
     }
     for (i = 0; i < _size; i += 9) {
       if (i % 2)
-        glVertex2i (i, 0);    
+        glVertex2i (i, 0);
       else
-        glVertex2i (i, i);    
+        glVertex2i (i, i);
     }
     glEnd ();
     break;
@@ -707,16 +707,16 @@ void CTexture::Rebuild ()
     int     margin;
     y = 0;
     margin = MAX (TRIM_PIXELS / 4, 1);
-    for (x = 0; x < _size; x += TRIM_PIXELS) 
+    for (x = 0; x < _size; x += TRIM_PIXELS)
       drawrect_simple (x + margin, y + margin, x + TRIM_PIXELS - margin, y + TRIM_PIXELS - margin, glRgba (1.0f), glRgba (0.5f));
     y += TRIM_PIXELS;
-    for (x = 0; x < _size; x += TRIM_PIXELS * 2) 
+    for (x = 0; x < _size; x += TRIM_PIXELS * 2)
       drawrect_simple (x + margin, y + margin, x + TRIM_PIXELS - margin, y + TRIM_PIXELS - margin, glRgba (1.0f), glRgba (0.5f));
     y += TRIM_PIXELS;
-    for (x = 0; x < _size; x += TRIM_PIXELS * 3) 
+    for (x = 0; x < _size; x += TRIM_PIXELS * 3)
       drawrect_simple (x + margin, y + margin, x + TRIM_PIXELS - margin, y + TRIM_PIXELS - margin, glRgba (1.0f), glRgba (0.5f));
     y += TRIM_PIXELS;
-    for (x = 0; x < _size; x += TRIM_PIXELS) 
+    for (x = 0; x < _size; x += TRIM_PIXELS)
       drawrect_simple (x + margin, y + margin * 2, x + TRIM_PIXELS - margin, y + TRIM_PIXELS - margin, glRgba (1.0f), glRgba (0.5f));
     break;
   case TEXTURE_SKY:
@@ -727,26 +727,26 @@ void CTexture::Rebuild ()
     break;
   }
   glPopMatrix ();
-  //Now blit the finished image into our texture  
+  //Now blit the finished image into our texture
   if (use_framebuffer) {
-    glBindTexture(GL_TEXTURE_2D, _glid);		
-	  glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, _size, _size, 0);
+    glBindTexture(GL_TEXTURE_2D, _glid);
+    glCopyTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, _size, _size, 0);
   }
   if (_mipmap) {
     bits = (unsigned char*)malloc (_size * _size * 4);
-    glGetTexImage (GL_TEXTURE_2D,	0, GL_RGBA, GL_UNSIGNED_BYTE, bits);
+    glGetTexImage (GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, bits);
     gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGBA, _size, _size, GL_RGBA, GL_UNSIGNED_BYTE, bits);
     free (bits);
-	  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_LINEAR);
-	  glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
   } else
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
   //cleanup and restore the viewport
-  RenderResize ();  
+  RenderResize ();
   _ready = true;
   lapsed = GetTickCount () - start;
   build_time += lapsed;
-    
+
 
 }
 
@@ -818,7 +818,7 @@ void TextureUpdate (void)
     CTexture*   t;
 
     for (t = head; t; t = t->_next) {
-      if (t->_my_id != TEXTURE_BLOOM) 
+      if (t->_my_id != TEXTURE_BLOOM)
         continue;
       do_bloom (t);
       return;
@@ -829,7 +829,7 @@ void TextureUpdate (void)
       t->Rebuild();
       return;
     }
-  } 
+  }
   textures_done = true;
 
 }

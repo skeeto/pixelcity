@@ -8,8 +8,8 @@
 #define WRAP(x,y)                 ((unsigned)x % y)
 #define SIGN(x)                   (((x) > 0) ? 1 : ((x) < 0) ? -1 : 0)
 #define ABS(x)                    (((x) < 0 ? (-x) : (x)))
-#define SMALLEST(x,y)             (ABS(x) < ABS(y) ? 0 : x)                
-#define MIN(x,y)                  ((x) < (y) ? x : y)                
-#define MAX(x,y)                  ((x) > (y) ? x : y)                
+#define SMALLEST(x,y)             (ABS(x) < ABS(y) ? 0 : x)
+#define MIN(x,y)                  ((x) < (y) ? x : y)
+#define MAX(x,y)                  ((x) > (y) ? x : y)
 #define POW(x,y)                  (float)pow(x,y)
 #define SWAP(a,b)                 {int temp = a;a = b; b = temp;}

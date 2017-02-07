@@ -7,7 +7,7 @@
 -------------------------------------------------------------------------------
 
   This module runs the visibility grid, a 2-dimensional array that aids in
-  culling objects during rendering. 
+  culling objects during rendering.
 
   There are many ways this could be refined or sped up, although tests indicate
   it's not a huge drain on performance.
@@ -104,24 +104,24 @@ void VisibleUpdate (void)
   }
   //Doesn't matter where we are facing, objects in current cell are always visible
   vis_grid[grid_x][grid_z] = true;
-  //Here, we look at the angle from the current camera position to the cell 
-  //on the grid, and how much that angle deviates from the current view angle. 
+  //Here, we look at the angle from the current camera position to the cell
+  //on the grid, and how much that angle deviates from the current view angle.
   for (x = 0; x < GRID_SIZE; x++) {
     for (y = 0; y < GRID_SIZE; y++) {
       //if we marked it visible earlier, skip all this math
       if (vis_grid[x][y])
         continue;
       //if the camera is to the left of this cell, use the left edge
-      if (grid_x < x) 
+      if (grid_x < x)
         target_x = (float)x * GRID_RESOLUTION;
-      else 
+      else
         target_x = (float)(x + 1) * GRID_RESOLUTION;
-      if (grid_z < y) 
+      if (grid_z < y)
         target_z = (float)y * GRID_RESOLUTION;
       else
         target_z = (float)(y + 1) * GRID_RESOLUTION;
       angle_to = 180 - MathAngle (target_x, target_z, position.x, position.z);
-      //Store how many degrees the cell is to the 
+      //Store how many degrees the cell is to the
       angle_diff = (float)fabs (MathAngleDifference (angle.y, angle_to));
       vis_grid[x][y] = angle_diff < 45;
     }
@@ -129,4 +129,3 @@ void VisibleUpdate (void)
 
 
 }
-  

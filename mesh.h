@@ -1,4 +1,3 @@
-
 #include <vector>
 
 struct cube
@@ -23,7 +22,7 @@ public:
                           ~CMesh ();
   unsigned                _list;
   int                     _polycount;
-  std::vector<GLvertex>   _vertex;  
+  std::vector<GLvertex>   _vertex;
   std::vector<cube>       _cube;
   std::vector<quad_strip> _quad_strip;
   std::vector<fan>        _fan;

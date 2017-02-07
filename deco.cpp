@@ -6,7 +6,7 @@
 
 -------------------------------------------------------------------------------
 
-  This handles building and rendering decoration objects - infrastructure & 
+  This handles building and rendering decoration objects - infrastructure &
   such around the city.
 
 -----------------------------------------------------------------------------*/
@@ -82,9 +82,9 @@ void CDeco::RenderFlat (bool colored)
 -----------------------------------------------------------------------------*/
 
 bool CDeco::Alpha ()
-{ 
-  
-  return _use_alpha; 
+{
+
+  return _use_alpha;
 
 }
 
@@ -209,7 +209,7 @@ void CDeco::CreateLightStrip (float x, float z, float width, float depth, float 
   GLvertex   p;
   quad_strip qs1;
   float      u, v;
-  
+
   qs1.index_list.push_back(0);
   qs1.index_list.push_back(1);
   qs1.index_list.push_back(3);
@@ -258,7 +258,7 @@ void CDeco::CreateLightTrim (GLvector* chain, int count, float height, int seed,
   _color = color;
   _center = glVector (0.0f, 0.0f, 0.0f);
   qs.index_list.reserve(count * 2 + 2);
-  for (i = 0; i < count; i++) 
+  for (i = 0; i < count; i++)
     _center += chain[i];
   _center /= (float)count;
   row = (float)(seed % TRIM_ROWS);
@@ -269,7 +269,7 @@ void CDeco::CreateLightTrim (GLvector* chain, int count, float height, int seed,
   for (i = 0; i < count + 1; i++) {
     if (i)
       u += glVectorLength (chain[i % count] - p.position) * 0.1f;
-    //Add the bottom point      
+    //Add the bottom point
     prev = i - 1;
     if (prev < 0)
       prev = count + prev;

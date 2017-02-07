@@ -6,9 +6,9 @@
 
 -------------------------------------------------------------------------------
 
-  This holds a bunch of variables used by the other modules. It has the 
+  This holds a bunch of variables used by the other modules. It has the
   claim system, which tracks all of the "property" is being used: As roads,
-  buildings, etc. 
+  buildings, etc.
 
 -----------------------------------------------------------------------------*/
 
@@ -73,17 +73,17 @@ public:
   int                 _width;
   int                 _depth;
   CMesh*              _mesh;
-  
+
   CStreet (int x, int y, int width, int depth);
   ~CStreet();
   void                Render ();
 
 };
 
-static HSL            light_colors[] = 
-{ 
+static HSL            light_colors[] =
+{
   0.04f,  0.9f,  0.93f,   //Amber / pink
-  0.055f, 0.95f, 0.93f,   //Slightly brighter amber 
+  0.055f, 0.95f, 0.93f,   //Slightly brighter amber
   0.08f,  0.7f,  0.93f,   //Very pale amber
   0.07f,  0.9f,  0.93f,   //Very pale orange
   0.1f,   0.9f,  0.85f,   //Peach
@@ -97,7 +97,7 @@ static HSL            light_colors[] =
   0.65f,  0.4f,  0.99f,   //Pure white. Bo-ring.
   0.65f,  0.0f,  0.8f,    //Dimmer white.
   0.65f,  0.0f,  0.6f,    //Dimmest white.
-}; 
+};
 
 static float          hue_list[] = { 0.04f, 0.07f, 0.1f, 0.5f, 0.6f }; //Yellows and blues - good for lights
 static GLrgba         bloom_color;
@@ -179,7 +179,7 @@ static void build_road (int x1, int y1, int width, int depth)
   int       sidewalk;
 
   //the given rectangle defines a street and its sidewalk. See which way it goes.
-  if (width > depth) 
+  if (width > depth)
     lanes = depth;
   else
     lanes = width;
@@ -221,7 +221,7 @@ static plot find_plot (int x, int z)
   plot      p;
   int       x1, x2, z1, z2;
 
-  //We've been given the location of an open bit of land, but we have no 
+  //We've been given the location of an open bit of land, but we have no
   //idea how big it is. Find the boundary.
   x1 = x2 = x;
   while (!claimed (x1 - 1, z, 1, 1) && x1 > 0)
@@ -267,7 +267,7 @@ void do_building (plot p)
   GLrgba  color;
   bool    square;
 
-  //now we know how big the rectangle plot is. 
+  //now we know how big the rectangle plot is.
   area = p.width * p.depth;
   color = WorldLightColor (RandomVal ());
   seed = RandomVal ();
@@ -275,7 +275,7 @@ void do_building (plot p)
   if (p.width < 10 || p.depth < 10)
     return;
   //If the area is too big for one building, sub-divide it.
- 
+
   if (area > 800) {
     if (COIN_FLIP) {
       p.width /= 2;
@@ -299,7 +299,7 @@ void do_building (plot p)
   square = abs (p.width - p.depth) < 10;
   //mark the land as used so other buildings don't appear here, even if we don't use it all.
   claim (p.x, p.z, p.width, p.depth, CLAIM_BUILDING);
-  
+
   //The roundy mod buildings look best on square plots.
   if (square && p.width > 20) {
     height = 45 + RandomVal (10);
@@ -350,8 +350,8 @@ static int build_light_strip (int x1, int z1, int direction)
   int     width, depth;
   int     dir_x, dir_z;
   float   size_adjust;
-  
-  //We adjust the size of the lights with this.  
+
+  //We adjust the size of the lights with this.
   size_adjust = 2.5f;
   color = glRgbaFromHsl (0.09f,  0.99f,  0.85f);
   switch (direction) {
@@ -399,7 +399,7 @@ static int build_light_strip (int x1, int z1, int direction)
 
 static void do_reset (void)
 {
-  
+
   int       x, y;
   int       width, depth, height;
   int       attempts;
@@ -422,7 +422,7 @@ static void do_reset (void)
   LightClear ();
   CarClear ();
   TextureReset ();
-  //Pick a tint for the bloom 
+  //Pick a tint for the bloom
   bloom_color = get_light_color(0.5f + (float)RandomVal (10) / 20.0f, 0.75f);
   light_color = glRgbaFromHsl (0.11f, 1.0f, 0.65f);
   ZeroMemory (world, WORLD_SIZE * WORLD_SIZE);
@@ -456,12 +456,12 @@ static void do_reset (void)
       build_road (x, 0, width, WORLD_SIZE);
     }
   }
-  //We kept track of the positions of streets that will outline the high-detail hot zone 
-  //in the middle of the world.  Save this in a bounding box so that later we can 
+  //We kept track of the positions of streets that will outline the high-detail hot zone
+  //in the middle of the world.  Save this in a bounding box so that later we can
   //have the camera fly around without clipping through buildings.
-  hot_zone = glBboxContainPoint (hot_zone, glVector (west_street, 0.0f, north_street)); 
+  hot_zone = glBboxContainPoint (hot_zone, glVector (west_street, 0.0f, north_street));
   hot_zone = glBboxContainPoint (hot_zone, glVector (east_street, 0.0f, south_street));
-  
+
   //Scan for places to put runs of streetlights on the east & west side of the road
   for (x = 1; x < WORLD_SIZE - 1; x++) {
     for (y = 0; y < WORLD_SIZE; y++) {
@@ -473,7 +473,7 @@ static void do_reset (void)
         continue;
       road_left = (world[x + 1][y] & CLAIM_ROAD) != 0;
       road_right = (world[x - 1][y] & CLAIM_ROAD) != 0;
-      //if the cells to our east and west are not road, then we're not on a corner. 
+      //if the cells to our east and west are not road, then we're not on a corner.
       if (!road_left && !road_right)
         continue;
       //if the cell to our east AND west is road, then we're on a median. skip it
@@ -496,15 +496,15 @@ static void do_reset (void)
       //if the cell to our east AND west is road, then we're on a median. skip it
       if (road_left && road_right)
         continue;
-      //if the cells to our north and south are not road, then we're not on a corner. 
+      //if the cells to our north and south are not road, then we're not on a corner.
       if (!road_left && !road_right)
         continue;
       x += build_light_strip (x, y, road_right ? EAST : WEST);
     }
   }
-  
-  
-  //Scan over the center area of the map and place the big buildings 
+
+
+  //Scan over the center area of the map and place the big buildings
   attempts = 0;
    while (skyscrapers < 50 && attempts < 350) {
     x = (WORLD_HALF / 2) + (RandomVal () % WORLD_HALF);
@@ -515,7 +515,7 @@ static void do_reset (void)
     }
     attempts++;
   }
-  
+
   //now blanket the rest of the world with lesser buildings
   for (x = 0; x < WORLD_SIZE; x ++) {
     for (y = 0; y < WORLD_SIZE; y ++) {
@@ -540,7 +540,7 @@ static void do_reset (void)
             height = 15 + RandomVal (15);
             width -=2;
             depth -=2;
-            if (COIN_FLIP) 
+            if (COIN_FLIP)
               new CBuilding (BUILDING_TOWER, x + 1, y + 1, height, width, depth, RandomVal (), building_color);
             else
               new CBuilding (BUILDING_BLOCKY, x + 1, y + 1, height, width, depth, RandomVal (), building_color);
@@ -551,14 +551,14 @@ static void do_reset (void)
         depth--;
       }
       //leave big gaps near the edge of the map, no need to pack detail there.
-      if (y < WORLD_EDGE || y > WORLD_SIZE - WORLD_EDGE) 
+      if (y < WORLD_EDGE || y > WORLD_SIZE - WORLD_EDGE)
         y += 32;
     }
     //leave big gaps near the edge of the map
-    if (x < WORLD_EDGE || x > WORLD_SIZE - WORLD_EDGE) 
+    if (x < WORLD_EDGE || x > WORLD_SIZE - WORLD_EDGE)
       x += 28;
   }
-  
+
 
 }
 
@@ -638,9 +638,9 @@ void WorldTerm (void)
 void WorldReset (void)
 {
 
-  //If we're already fading out, then this is the developer hammering on the 
+  //If we're already fading out, then this is the developer hammering on the
   //"rebuild" button.  Let's hurry things up for the nice man...
-  if (fade_state == FADE_OUT) 
+  if (fade_state == FADE_OUT)
     do_reset ();
   //If reset is called but the world isn't ready, then don't bother fading out.
   //The program probably just started.
@@ -656,7 +656,7 @@ void WorldReset (void)
 void WorldRender ()
 {
 
-  if (!SHOW_DEBUG_GROUND) 
+  if (!SHOW_DEBUG_GROUND)
     return;
   //Render a single texture over the city that shows traffic lanes
   glDepthMask (false);
@@ -738,7 +738,7 @@ void WorldUpdate (void)
         fade_state = FADE_IN;
         fade_start = now;
         fade_current = 1.0f;
-    }    
+    }
     fade_delta = now - fade_start;
     //See if we're done fading in or out
     if (fade_delta > FADE_TIME && fade_state != FADE_WAIT) {
@@ -761,7 +761,7 @@ void WorldUpdate (void)
     }
     if (!TextureReady ())
       fade_current = 1.0f;
-  } 
+  }
   if (fade_state == FADE_IDLE && !TextureReady ()) {
     fade_state = FADE_IN;
     fade_start = now;

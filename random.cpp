@@ -1,5 +1,5 @@
 /*-----------------------------------------------------------------------------
-									               r a n d o m
+                                 r a n d o m
 -----------------------------------------------------------------------------*/
 
 /*-----------------------------------------------------------------------------
@@ -7,13 +7,13 @@
   It sets new standards for the period, quality and speed of random number
   generators. The incredible period is 2^19937 - 1, a number with about 6000
   digits; the 32-bit random numbers exhibit best possible equidistribution
-  properties in dimensions up to 623; and it's fast, very fast. 
+  properties in dimensions up to 623; and it's fast, very fast.
 -----------------------------------------------------------------------------*/
 
 
-#define LOWER_MASK            0x7fffffff 
+#define LOWER_MASK            0x7fffffff
 #define M                     397
-#define MATRIX_A              0x9908b0df 
+#define MATRIX_A              0x9908b0df
 #define N                     624
 #define TEMPERING_MASK_B      0x9d2c5680
 #define TEMPERING_MASK_C      0xefc60000
@@ -21,7 +21,7 @@
 #define TEMPERING_SHIFT_S(y)  (y << 7)
 #define TEMPERING_SHIFT_T(y)  (y << 15)
 #define TEMPERING_SHIFT_U(y)  (y >> 11)
-#define UPPER_MASK            0x80000000 
+#define UPPER_MASK            0x80000000
 
 #include <memory.h>
 #include "random.h"
@@ -37,9 +37,9 @@ static unsigned long    ptgfsr[N];
 unsigned long RandomVal (void)
 {
 
-  int		            kk;
-  unsigned long	    y;
-  
+  int               kk;
+  unsigned long     y;
+
   if (k == N) {
     for (kk = 0; kk < N - M; kk++) {
       y = (ptgfsr[kk] & UPPER_MASK) | (ptgfsr[kk + 1] & LOWER_MASK);
@@ -79,8 +79,8 @@ unsigned long RandomVal (int range)
 void RandomInit (unsigned long seed)
 {
 
-  //int	    k;
-  
+  //int     k;
+
   //memset (ptgfsr, 0, sizeof (ptgfsr));
   //mag01[0] = 0x0;
   //mag01[1] = MATRIX_A;
@@ -90,4 +90,3 @@ void RandomInit (unsigned long seed)
   k = 1;
 
 }
-

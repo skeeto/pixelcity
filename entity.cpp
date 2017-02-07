@@ -7,10 +7,10 @@
 
 -------------------------------------------------------------------------------
 
-  An entity is any renderable stationary object in the world.  This is an 
-  abstract class.  This module gathers up the Entities, sorts them by 
+  An entity is any renderable stationary object in the world.  This is an
+  abstract class.  This module gathers up the Entities, sorts them by
   texture use and location, and then stores them in OpenGL render lists
-  for faster rendering.    
+  for faster rendering.
 
 -----------------------------------------------------------------------------*/
 
@@ -108,7 +108,7 @@ static void do_compile ()
   //they are grouped by texture used can really improve framerate.
   //qsort (entity_list, entity_count, sizeof (struct entity), do_compare);
   //sorted = true;
-  //Now group entites on the grid 
+  //Now group entites on the grid
   //make a list for the textured objects in this region
   if (!cell_list[x][y].list_textured)
     cell_list[x][y].list_textured = glGenLists(1);
@@ -121,7 +121,7 @@ static void do_compile ()
       entity_list[i].object->Render ();
     }
   }
-  glEndList();	
+  glEndList();
 
   //Make a list of flat-color stuff (A/C units, ledges, roofs, etc.)
   if (!cell_list[x][y].list_flat)
@@ -135,7 +135,7 @@ static void do_compile ()
       entity_list[i].object->RenderFlat (false);
     }
   }
-  glEndList();	
+  glEndList();
   //Now a list of flat-colored stuff that will be wireframe friendly
   if (!cell_list[x][y].list_flat_wireframe)
     cell_list[x][y].list_flat_wireframe = glGenLists(1);
@@ -148,7 +148,7 @@ static void do_compile ()
       entity_list[i].object->RenderFlat (true);
     }
   }
-  glEndList();	
+  glEndList();
   //Now a list of stuff to be alpha-blended, and thus rendered last
   if (!cell_list[x][y].list_alpha)
     cell_list[x][y].list_alpha = glGenLists(1);
@@ -165,7 +165,7 @@ static void do_compile ()
     }
   }
   glDepthMask (true);
-  glEndList();	
+  glEndList();
 
   //now walk the grid
   compile_x++;
@@ -175,7 +175,7 @@ static void do_compile ()
     if (compile_y == GRID_SIZE)
       compiled = true;
     compile_end = GetTickCount ();
-  } 
+  }
   compile_count++;
 
 
@@ -216,7 +216,7 @@ void EntityUpdate ()
   if (!TextureReady ()) {
     sorted = false;
     return;
-  } 
+  }
   if (!sorted) {
     qsort (entity_list, entity_count, sizeof (struct entity), do_compare);
     sorted = true;
@@ -271,7 +271,7 @@ void EntityRender ()
       if (Visible (x, y)) {
         if (wireframe)
           glCallList (cell_list[x][y].list_flat_wireframe);
-        else 
+        else
           glCallList (cell_list[x][y].list_flat);
       }
     }
@@ -287,7 +287,7 @@ void EntityRender ()
       }
     }
   }
-  
+
 }
 
 
@@ -318,13 +318,13 @@ void EntityClear ()
   for (x = 0; x < GRID_SIZE; x++) {
     for (y = 0; y < GRID_SIZE; y++) {
       glNewList (cell_list[x][y].list_textured, GL_COMPILE);
-      glEndList();	
+      glEndList();
       glNewList (cell_list[x][y].list_alpha, GL_COMPILE);
-      glEndList();	
+      glEndList();
       glNewList (cell_list[x][y].list_flat_wireframe, GL_COMPILE);
-      glEndList();	
+      glEndList();
       glNewList (cell_list[x][y].list_flat, GL_COMPILE);
-      glEndList();	
+      glEndList();
     }
   }
 
@@ -362,7 +362,7 @@ int EntityPolyCount (void)
     return 0;
   if (polycount)
     return polycount;
-  for (int i = 0; i < entity_count; i++) 
+  for (int i = 0; i < entity_count; i++)
     polycount += entity_list[i].object->PolyCount ();
   return polycount;
 
@@ -395,5 +395,3 @@ void CEntity::Update (void)
 
 
 }
-
-

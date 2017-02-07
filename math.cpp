@@ -5,7 +5,7 @@
   2009 Shamus Young
 
 -------------------------------------------------------------------------------
-  
+
   Various useful math functions.
 
 -----------------------------------------------------------------------------*/
@@ -22,7 +22,7 @@ Keep an angle between 0 and 360
 float MathAngle (float angle)
 {
 
-  if (angle < 0.0f) 
+  if (angle < 0.0f)
     angle = 360.0f - (float)fmod (fabs (angle), 360.0f);
   else
     angle = (float)fmod (angle, 360.0f);
@@ -42,7 +42,7 @@ float MathAngle (float x1, float y1, float x2, float y2)
   float   angle;
 
   z_delta = (y1 - y2);
-  x_delta = (x1 - x2); 
+  x_delta = (x1 - x2);
   if (x_delta == 0) {
     if (z_delta > 0)
       return 0.0f;
@@ -81,7 +81,7 @@ float MathDistance2 (float x1, float y1, float x2, float y2)
 }
 
 /*-----------------------------------------------------------------------------
-Get distance between 2 points on a plane. This is slightly slower than 
+Get distance between 2 points on a plane. This is slightly slower than
 MathDistance2 ()
 -----------------------------------------------------------------------------*/
 
@@ -154,22 +154,22 @@ float MathAverage (float n1, float n2)
 }
 
 /*-----------------------------------------------------------------------------
-  This will take linear input values from 0.0 to 1.0 and convert them to 
-  values along a curve.  This could also be acomplished with sin (), but this 
+  This will take linear input values from 0.0 to 1.0 and convert them to
+  values along a curve.  This could also be acomplished with sin (), but this
   way avoids converting to radians and back.
 -----------------------------------------------------------------------------*/
 
 float MathScalarCurve (float val)
 {
- 
+
   float   sign;
 
   val = (val - 0.5f) * 2.0f;
   if (val < 0.0f)
     sign = -1.0f;
-  else 
+  else
     sign = 1.0f;
-  if (val < 0.0f) 
+  if (val < 0.0f)
     val = -val;
   val = 1.0f - val;
   val *= val;

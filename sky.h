@@ -7,7 +7,7 @@ struct sky_point
   GLvector      position;
 };
 
-class CSky 
+class CSky
 {
 private:
   int                     m_list;

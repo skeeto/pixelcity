@@ -36,7 +36,7 @@
 #include "visible.h"
 #include "win.h"
 
-static GLvector           direction[] = 
+static GLvector           direction[] =
 {
   0.0f, 0.0f, -1.0f,
   1.0f, 0.0f,  0.0f,
@@ -160,7 +160,7 @@ bool CCar::TestPosition (int row, int col)
   return true;
 
 }
- 
+
 /*-----------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------*/
@@ -169,7 +169,7 @@ void CCar::Update (void)
 {
 
   int       new_row, new_col;
-  GLvector  old_pos;    
+  GLvector  old_pos;
   GLvector  camera;
 
   //If the car isn't ready, place it on the map and get it moving
@@ -178,11 +178,11 @@ void CCar::Update (void)
     //if the car isn't ready, we need to place it somewhere on the map
     m_row = DEAD_ZONE + RandomVal (WORLD_SIZE - DEAD_ZONE * 2);
     m_col = DEAD_ZONE + RandomVal (WORLD_SIZE - DEAD_ZONE * 2);
-    //if there is already a car here, forget it.  
+    //if there is already a car here, forget it.
     if (carmap[m_row][m_col] > 0)
       return;
     //if this spot is not a road, forget it
-    if (!(WorldCell (m_row, m_col) & CLAIM_ROAD)) 
+    if (!(WorldCell (m_row, m_col) & CLAIM_ROAD))
       return;
     if (!Visible (glVector ((float)m_row, 0.0f, (float)m_col)))
       return;
@@ -190,13 +190,13 @@ void CCar::Update (void)
     m_position = glVector ((float)m_row, 0.1f, (float)m_col);
     m_drive_position = m_position;
     m_ready = true;
-    if (WorldCell (m_row, m_col) & MAP_ROAD_NORTH) 
+    if (WorldCell (m_row, m_col) & MAP_ROAD_NORTH)
       m_direction = NORTH;
-    if (WorldCell (m_row, m_col) & MAP_ROAD_EAST) 
+    if (WorldCell (m_row, m_col) & MAP_ROAD_EAST)
       m_direction = EAST;
-    if (WorldCell (m_row, m_col) & MAP_ROAD_SOUTH) 
+    if (WorldCell (m_row, m_col) & MAP_ROAD_SOUTH)
       m_direction = SOUTH;
-    if (WorldCell (m_row, m_col) & MAP_ROAD_WEST) 
+    if (WorldCell (m_row, m_col) & MAP_ROAD_WEST)
       m_direction = WEST;
     m_drive_angle = dangles[m_direction];
     m_max_speed = (float)(4 + RandomVal (6)) / 10.0f;
@@ -211,8 +211,8 @@ void CCar::Update (void)
   m_speed += m_max_speed * 0.05f;
   m_speed = MIN (m_speed, m_max_speed);
   m_position += direction[m_direction] * MOVEMENT_SPEED * m_speed;
-  //If the car has moved out of view, there's no need to keep simulating it. 
-  if (!Visible (glVector ((float)m_row, 0.0f, (float)m_col))) 
+  //If the car has moved out of view, there's no need to keep simulating it.
+  if (!Visible (glVector ((float)m_row, 0.0f, (float)m_col)))
     m_ready = false;
   //if the car is far away, remove it.  We use manhattan units because buildings almost always
   //block views of cars on the diagonal.
@@ -248,7 +248,7 @@ void CCar::Update (void)
         m_front = camera.z > m_position.z;
       else if (m_direction == EAST)
         m_front = camera.x > m_position.x;
-      else 
+      else
         m_front = camera.x < m_position.x;
     }
   }
@@ -286,22 +286,22 @@ void CCar::Render ()
   glBegin (GL_QUADS);
 
   angle = dangles[m_direction];
-  pos = m_drive_position;// 
+  pos = m_drive_position;//
   angle = 360 - (int)MathAngle (m_position.x, m_position.z, pos.x, pos.z);
   angle %= 360;
   turn = (int)MathAngleDifference ((float)m_drive_angle, (float)angle);
   m_drive_angle += SIGN (turn);
   pos += glVector (0.5f, 0.0f, 0.5f);
-  
-  glTexCoord2f (0, 0);   
+
+  glTexCoord2f (0, 0);
   glVertex3f (pos.x + angles[angle].x, -CAR_SIZE, pos.z + angles[angle].y);
-  glTexCoord2f (1, 0);   
+  glTexCoord2f (1, 0);
   glVertex3f (pos.x - angles[angle].x, -CAR_SIZE, pos.z - angles[angle].y);
-  glTexCoord2f (1, 1);   
+  glTexCoord2f (1, 1);
   glVertex3f (pos.x - angles[angle].x,  top, pos.z - angles[angle].y);
-  glTexCoord2f (0, 1);   
+  glTexCoord2f (0, 1);
   glVertex3f (pos.x + angles[angle].x,  top, pos.z +  angles[angle].y);
-  
+
   glEnd ();
 
 }

@@ -6,10 +6,10 @@
 
 -------------------------------------------------------------------------------
 
-  Did this need to be written as a class? It did not. There will never be 
+  Did this need to be written as a class? It did not. There will never be
   more than one sky in play, so the whole class structure here is superflous,
   but harmless.
-  
+
 -----------------------------------------------------------------------------*/
 
 #define SKYPOINTS      24
@@ -124,7 +124,7 @@ CSky::CSky ()
   m_list = glGenLists(1);
   glNewList (m_list, GL_COMPILE);
   glColor3f (1, 1, 1);
-  
+
   glBegin (GL_QUAD_STRIP);
   for (i = 0; i < SKYPOINTS; i++) {
     glTexCoord2f (circle[i].uv.x, 0.0f);
@@ -135,7 +135,7 @@ CSky::CSky ()
     glVertex3fv (&pos.x);
   }
   glEnd ();
-  glEndList();	
+  glEndList();
   sky = this;
 
 }

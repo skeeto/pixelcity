@@ -20,7 +20,7 @@
 #include "glTypes.h"
 
 /*-----------------------------------------------------------------------------
-                           
+
 -----------------------------------------------------------------------------*/
 
 GLvector glVectorReflect (GLvector3 ray, GLvector3 normal)
@@ -35,7 +35,7 @@ GLvector glVectorReflect (GLvector3 ray, GLvector3 normal)
 
 
 /*-----------------------------------------------------------------------------
-                           
+
 -----------------------------------------------------------------------------*/
 
 GLvector3 glVector (float x, float y, float z)
@@ -51,7 +51,7 @@ GLvector3 glVector (float x, float y, float z)
 }
 
 /*-----------------------------------------------------------------------------
-                           
+
 -----------------------------------------------------------------------------*/
 
 GLvector3 glVectorInterpolate (GLvector3 v1, GLvector3 v2, float scalar)
@@ -64,10 +64,10 @@ GLvector3 glVectorInterpolate (GLvector3 v1, GLvector3 v2, float scalar)
   result.z = MathInterpolate (v1.z, v2.z, scalar);
   return result;
 
-}  
+}
 
 /*-----------------------------------------------------------------------------
-                           
+
 -----------------------------------------------------------------------------*/
 
 float glVectorLength (GLvector3 v)
@@ -78,7 +78,7 @@ float glVectorLength (GLvector3 v)
 }
 
 /*-----------------------------------------------------------------------------
-                           
+
 -----------------------------------------------------------------------------*/
 
 float glVectorDotProduct (GLvector3 v1, GLvector3 v2)
@@ -89,14 +89,14 @@ float glVectorDotProduct (GLvector3 v1, GLvector3 v2)
 }
 
 /*-----------------------------------------------------------------------------
-                           
+
 -----------------------------------------------------------------------------*/
 
 GLvector3 glVectorCrossProduct (GLvector3 v1, GLvector3 v2)
 {
 
   GLvector3 result;
-  
+
   result.x = v1.y * v2.z - v2.y * v1.z;
   result.y = v1.z * v2.x - v2.z * v1.x;
   result.z = v1.x * v2.y - v2.x * v1.y;
@@ -105,7 +105,7 @@ GLvector3 glVectorCrossProduct (GLvector3 v1, GLvector3 v2)
 }
 
 /*-----------------------------------------------------------------------------
-                           
+
 -----------------------------------------------------------------------------*/
 
 GLvector3 glVectorInvert (GLvector3 v)
@@ -119,7 +119,7 @@ GLvector3 glVectorInvert (GLvector3 v)
 }
 
 /*-----------------------------------------------------------------------------
-                           
+
 -----------------------------------------------------------------------------*/
 
 GLvector3 glVectorScale (GLvector3 v, float scale)
@@ -133,7 +133,7 @@ GLvector3 glVectorScale (GLvector3 v, float scale)
 }
 
 /*-----------------------------------------------------------------------------
-                           
+
 -----------------------------------------------------------------------------*/
 
 GLvector3 glVectorNormalize (GLvector3 v)
@@ -149,7 +149,7 @@ GLvector3 glVectorNormalize (GLvector3 v)
 }
 
 /*-----------------------------------------------------------------------------
-+                           
++
 -----------------------------------------------------------------------------*/
 
 GLvector GLvector::operator+ (const GLvector& c)

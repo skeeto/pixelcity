@@ -7,9 +7,9 @@
 -------------------------------------------------------------------------------
 
   This class is used to make constructing objects easier. It handles
-  allocating vertex lists, polygon lists, and suchlike. 
+  allocating vertex lists, polygon lists, and suchlike.
 
-  If you were going to implement vertex buffers, this would be the place to 
+  If you were going to implement vertex buffers, this would be the place to
   do it.  Take away the _vertex member variable and store verts for ALL meshes
   in a common list, which could then be unloaded onto the good 'ol GPU.
 
@@ -132,7 +132,7 @@ void CMesh::Render ()
       glVertex3fv (&_vertex[*n].position.x);
     }
     glEnd ();
-    
+
     glBegin (GL_QUADS);
     glTexCoord2fv (&_vertex[ci->index_list[7]].uv.x);
     glVertex3fv (&_vertex[ci->index_list[7]].position.x);
@@ -140,7 +140,7 @@ void CMesh::Render ()
     glVertex3fv (&_vertex[ci->index_list[3]].position.x);
     glVertex3fv (&_vertex[ci->index_list[1]].position.x);
     glEnd ();
-    
+
     glBegin (GL_QUADS);
     glTexCoord2fv (&_vertex[ci->index_list[6]].uv.x);
     glVertex3fv (&_vertex[ci->index_list[0]].position.x);
@@ -149,7 +149,7 @@ void CMesh::Render ()
     glVertex3fv (&_vertex[ci->index_list[6]].position.x);
     glEnd ();
 
-  
+
   }
   for (fi = _fan.begin(); fi < _fan.end(); ++fi) {
     glBegin (GL_TRIANGLE_FAN);
@@ -172,7 +172,7 @@ void CMesh::Compile ()
 
   glNewList (_list, GL_COMPILE);
   Render ();
-  glEndList();	
+  glEndList();
   _compiled = true;
 
 }

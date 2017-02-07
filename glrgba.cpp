@@ -25,11 +25,11 @@
 
 GLrgba glRgbaFromHsl (float h, float sl, float l)
 {
-  
+
   float v;
   float r,g,b;
-  
-  
+
+
   r = l;   // default to gray
   g = l;
   b = l;
@@ -39,7 +39,7 @@ GLrgba glRgbaFromHsl (float h, float sl, float l)
     float sv;
     int sextant;
     float fract, vsf, mid1, mid2;
-   
+
     m = l + l - v;
     sv = (v - m ) / v;
     h *= 6.0f;
@@ -169,12 +169,12 @@ GLrgba glRgba (char* string)
   if (pound = strchr (buffer, '#'))
     pound[0] = ' ';
   if (sscanf (string, "%x", &color) != 1)
-	  return glRgba (0.0f);
+    return glRgba (0.0f);
   result.red = (float)GetBValue (color) / 255.0f;
   result.green = (float)GetGValue (color) / 255.0f;
   result.blue = (float)GetRValue (color) / 255.0f;
   result.alpha = 1.0f;
-  return result;  
+  return result;
 
 }
 
@@ -191,7 +191,7 @@ GLrgba glRgba (int red, int green, int blue)
   result.green = (float)green / 255.0f;
   result.blue = (float)blue / 255.0f;
   result.alpha = 1.0f;
-  return result;  
+  return result;
 
 }
 
@@ -284,7 +284,7 @@ GLrgba glRgbaUnique (int i)
 }
 
 /*-----------------------------------------------------------------------------
-  + operator                          
+  + operator
 -----------------------------------------------------------------------------*/
 
 GLrgba GLrgba::operator+ (const GLrgba& c)
@@ -295,7 +295,7 @@ GLrgba GLrgba::operator+ (const GLrgba& c)
 GLrgba GLrgba::operator+ (const float& c)
 {
   return glRgba (red + c, green + c, blue + c, alpha);
-} 
+}
 
 void GLrgba::operator+= (const GLrgba& c)
 {
@@ -312,7 +312,7 @@ void GLrgba::operator+= (const float& c)
 }
 
 /*-----------------------------------------------------------------------------
-  - operator                          
+  - operator
 -----------------------------------------------------------------------------*/
 
 GLrgba GLrgba::operator- (const GLrgba& c)
@@ -340,7 +340,7 @@ void GLrgba::operator-= (const float& c)
 }
 
 /*-----------------------------------------------------------------------------
-  * operator                          
+  * operator
 -----------------------------------------------------------------------------*/
 
 GLrgba GLrgba::operator* (const GLrgba& c)
@@ -368,7 +368,7 @@ void GLrgba::operator*= (const float& c)
 }
 
 /*-----------------------------------------------------------------------------
-  / operator                          
+  / operator
 -----------------------------------------------------------------------------*/
 
 GLrgba GLrgba::operator/ (const GLrgba& c)

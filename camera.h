@@ -12,7 +12,7 @@ void      CameraNextBehavior (void);
 GLvector  CameraPosition (void);
 void      CameraPositionSet (GLvector new_pos);
 void      CameraReset ();
-void      CameraUpdate (void);	
+void      CameraUpdate (void);
 void      CameraTerm (void);
 
 void      CameraForward (float delta);

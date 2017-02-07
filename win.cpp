@@ -38,7 +38,7 @@
 #pragma comment (lib, "glu32.lib")
 #if SCREENSAVER
 #pragma comment (lib, "scrnsave.lib")
-#endif	
+#endif
 
 
 
@@ -105,13 +105,13 @@ static void MoveCursor (int x, int y)
 void WinPopup (char* message, ...)
 {
 
-  va_list  		marker;
+  va_list     marker;
   char        buf[1024];
 
   va_start (marker, message);
-  vsprintf (buf, message, marker); 
+  vsprintf (buf, message, marker);
   va_end (marker);
-  MessageBox (NULL, buf, APP_TITLE, MB_ICONSTOP | MB_OK | 
+  MessageBox (NULL, buf, APP_TITLE, MB_ICONSTOP | MB_OK |
     MB_TASKMODAL);
 
 }
@@ -222,7 +222,7 @@ void AppInit (void)
                                 W i n M a i n
 -----------------------------------------------------------------------------*/
 
-void AppTerm (void) 
+void AppTerm (void)
 {
 
   TextureTerm ();
@@ -242,20 +242,20 @@ int PASCAL WinMain (HINSTANCE instance_in, HINSTANCE previous_instance,
   LPSTR command_line, int show_style)
 {
 
- 	MSG		  msg;
+  MSG     msg;
 
   instance = instance_in;
   WinInit ();
   AppInit ();
   while (!quit) {
-		if (PeekMessage (&msg, NULL, 0, 0, PM_REMOVE))	{
-			if (msg.message == WM_QUIT)	
-				quit = true;
-			else {
-				TranslateMessage(&msg);			
-				DispatchMessage(&msg);			
-			}
-    } else 
+    if (PeekMessage (&msg, NULL, 0, 0, PM_REMOVE))  {
+      if (msg.message == WM_QUIT)
+        quit = true;
+      else {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+      }
+    } else
       AppUpdate ();
 
   }
@@ -283,8 +283,8 @@ LONG WINAPI ScreenSaverProc(HWND hwnd_in,UINT message,WPARAM wparam,LPARAM lpara
   switch(message)
   {
   case WM_SIZE:
-    width = LOWORD(lparam);  // width of client area 
-    height = HIWORD(lparam); // height of client area 
+    width = LOWORD(lparam);  // width of client area
+    height = HIWORD(lparam); // height of client area
     if (wparam == SIZE_MAXIMIZED) {
       IniIntSet ("WindowMaximized", 1);
     } else {
@@ -295,9 +295,9 @@ LONG WINAPI ScreenSaverProc(HWND hwnd_in,UINT message,WPARAM wparam,LPARAM lpara
     RenderResize ();
     break;
   case WM_KEYDOWN:
-    key = (int) wparam; 
+    key = (int) wparam;
     if (key == 'R')
-      WorldReset (); 
+      WorldReset ();
     else if (key == 'W')
       RenderWireframeToggle ();
     else if (key == 'E')
@@ -317,7 +317,7 @@ LONG WINAPI ScreenSaverProc(HWND hwnd_in,UINT message,WPARAM wparam,LPARAM lpara
     else if (!SCREENSAVER) {
       //Dev mode keys
       if (key == 'C')
-        CameraAutoToggle (); 
+        CameraAutoToggle ();
       if (key == 'B')
         CameraNextBehavior ();
       if (key == VK_F5)
@@ -374,14 +374,14 @@ LONG WINAPI ScreenSaverProc(HWND hwnd_in,UINT message,WPARAM wparam,LPARAM lpara
     }
     break;
   case WM_MOUSEMOVE:
-    p.x = LOWORD(lparam);  // horizontal position of cursor 
-    p.y = HIWORD(lparam);  // vertical position of cursor 
+    p.x = LOWORD(lparam);  // horizontal position of cursor
+    p.y = HIWORD(lparam);  // vertical position of cursor
     if (p.x < 0 || p.x > width)
       break;
     if (p.y < 0 || p.y > height)
       break;
     if (!mouse_forced && !lmb && !rmb) {
-      select_pos = p; 
+      select_pos = p;
     }
     if (mouse_forced) {
       mouse_forced = false;
@@ -412,7 +412,7 @@ LONG WINAPI ScreenSaverProc(HWND hwnd_in,UINT message,WPARAM wparam,LPARAM lpara
     hwnd = hwnd_in;
     if (SCREENSAVER)
       AppInit ();
-    SetTimer (hwnd, 1, 7, NULL); 
+    SetTimer (hwnd, 1, 7, NULL);
     return 0;
   case WM_TIMER:
     AppUpdate ();
@@ -424,7 +424,7 @@ LONG WINAPI ScreenSaverProc(HWND hwnd_in,UINT message,WPARAM wparam,LPARAM lpara
 #if SCREENSAVER
   return DefScreenSaverProc(hwnd_in,message,wparam,lparam);
 #else
-  return DefWindowProc (hwnd_in,message,wparam,lparam);   
+  return DefWindowProc (hwnd_in,message,wparam,lparam);
 #endif
 
 }
@@ -441,18 +441,18 @@ bool WinInit (void)
   int           style;
   bool          max;
 
-	wcex.cbSize         = sizeof(WNDCLASSEX); 
-	wcex.style			    = CS_HREDRAW | CS_VREDRAW;
-	wcex.lpfnWndProc	  = (WNDPROC)ScreenSaverProc;
-	wcex.cbClsExtra		  = 0;
-	wcex.cbWndExtra		  = 0;
-	wcex.hInstance		  = instance;
-	wcex.hIcon			    = NULL;
-	wcex.hCursor		    = LoadCursor(NULL, IDC_ARROW);
-	wcex.hbrBackground	= (HBRUSH)(COLOR_BTNFACE+1);
-	wcex.lpszMenuName	  = NULL;
-	wcex.lpszClassName	= APP_TITLE;
-	wcex.hIconSm		    = NULL;
+  wcex.cbSize         = sizeof(WNDCLASSEX);
+  wcex.style          = CS_HREDRAW | CS_VREDRAW;
+  wcex.lpfnWndProc    = (WNDPROC)ScreenSaverProc;
+  wcex.cbClsExtra     = 0;
+  wcex.cbWndExtra     = 0;
+  wcex.hInstance      = instance;
+  wcex.hIcon          = NULL;
+  wcex.hCursor        = LoadCursor(NULL, IDC_ARROW);
+  wcex.hbrBackground  = (HBRUSH)(COLOR_BTNFACE+1);
+  wcex.lpszMenuName   = NULL;
+  wcex.lpszClassName  = APP_TITLE;
+  wcex.hIconSm        = NULL;
   if (!RegisterClassEx(&wcex)) {
     WinPopup ("Cannot create window class");
     return false;
@@ -473,7 +473,7 @@ bool WinInit (void)
     WinPopup ("Cannot create window");
     return false;
   }
-  if (max) 
+  if (max)
     ShowWindow (hwnd, SW_MAXIMIZE);
   else
     ShowWindow (hwnd, SW_SHOW);

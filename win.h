@@ -18,7 +18,7 @@
 #define FADE_TIME           (SCREENSAVER ? 1500 : 1) //milliseconds
 //Debug ground texture that shows traffic lanes
 #define SHOW_DEBUG_GROUND   0
-//Controls the ammount of space available for buildings.  
+//Controls the ammount of space available for buildings.
 //Other code is wrtten assuming this will be a power of two.
 #define WORLD_SIZE          1024
 #define WORLD_HALF          (WORLD_SIZE / 2)

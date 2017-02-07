@@ -6,7 +6,7 @@
 
 -------------------------------------------------------------------------------
 
-  This module contains the class to construct the buildings.  
+  This module contains the class to construct the buildings.
 
 -----------------------------------------------------------------------------*/
 
@@ -70,15 +70,15 @@ CBuilding::CBuilding (int type, int x, int y, int height, int width, int depth, 
   switch (type) {
   case BUILDING_SIMPLE:
     CreateSimple ();
-    break;  
-  case BUILDING_MODERN: 
-    CreateModern (); 
     break;
-  case BUILDING_TOWER: 
-    CreateTower (); 
+  case BUILDING_MODERN:
+    CreateModern ();
+    break;
+  case BUILDING_TOWER:
+    CreateTower ();
     break;
   case BUILDING_BLOCKY:
-    CreateBlocky (); 
+    CreateBlocky ();
     break;
   }
 
@@ -126,7 +126,7 @@ int CBuilding::PolyCount ()
 -----------------------------------------------------------------------------*/
 
 void CBuilding::Render ()
-{ 
+{
 
   glColor3fv (&_color.red);
   _mesh->Render ();
@@ -139,7 +139,7 @@ void CBuilding::Render ()
 -----------------------------------------------------------------------------*/
 
 void CBuilding::RenderFlat (bool colored)
-{ 
+{
 
   if (colored)
     glColor3fv (&_color.red);
@@ -320,7 +320,7 @@ void CBuilding::ConstructRoof (float left, float right, float front, float back,
     _have_lights = true;
   }
   bottom += (float)height;
-  //If the roof is big enough, consider making another layer 
+  //If the roof is big enough, consider making another layer
   if (width > 7 && depth > 7 && _roof_tiers < max_tiers) {
     ConstructRoof (left + 1, right - 1, front + 1, back - 1, bottom);
     return;
@@ -348,7 +348,7 @@ void CBuilding::ConstructRoof (float left, float right, float front, float back,
     tower_height = (float)(12 + RandomVal (8));
     d->CreateRadioTower (glVector ((float)(left + right) / 2.0f, (float)bottom, (float)(front + back) / 2.0f), 15.0f);
   }
-  
+
 
 }
 
@@ -372,7 +372,7 @@ void CBuilding::ConstructSpike (int left, int right, int front, int back, int bo
   center.z = ((float)front + (float)back) / 2.0f;
   p.position = glVector (center.x, (float)top, center.z);
   _mesh_flat->VertexAdd (p);
- 
+
   p.position = glVector ((float)left, (float)bottom, (float)back);
   _mesh_flat->VertexAdd (p);
 
@@ -381,10 +381,10 @@ void CBuilding::ConstructSpike (int left, int right, int front, int back, int bo
 
   p.position = glVector ((float)right, (float)bottom, (float)front);
   _mesh_flat->VertexAdd (p);
-  
+
   p.position = glVector ((float)left, (float)bottom, (float)front);
   _mesh_flat->VertexAdd (p);
-  
+
   _mesh_flat->FanAdd (f);
 
 }
@@ -428,7 +428,7 @@ float CBuilding::ConstructWall (int start_x, int start_y, int start_z, int direc
   z = start_z;
   mid = (length / 2) - 1;
   odd = 1 - (length % 2);
-  if (length % 2) 
+  if (length % 2)
     mid++;
   //mid = (length / 2);
   v.uv.x = (float)(x + z) / SEGMENTS_PER_TEXTURE;
@@ -438,7 +438,7 @@ float CBuilding::ConstructWall (int start_x, int start_y, int start_z, int direc
     //column counts up to the mid point, then back down, to make it symetrical
     if (i <= mid)
       column = i - odd;
-    else 
+    else
       column = (mid) - (i - (mid));
     last_blank = blank;
     blank = (column % window_groups) > window_groups / 2;
@@ -462,14 +462,14 @@ float CBuilding::ConstructWall (int start_x, int start_y, int start_z, int direc
     x += step_x;
     z += step_z;
   }
-  _mesh->QuadStripAdd (qs);  
+  _mesh->QuadStripAdd (qs);
   return v.uv.x;
 
 }
 
 /*-----------------------------------------------------------------------------
 
-  This makes a big chunky building of intersecting cubes.  
+  This makes a big chunky building of intersecting cubes.
 
 -----------------------------------------------------------------------------*/
 
@@ -520,8 +520,8 @@ void CBuilding::CreateBlocky ()
     max_tiers = 1;
   //We begin at the top of the building, and work our way down.
   //Viewed from above, the sections of the building are randomly sized
-  //rectangles that ALWAYS include the center of the building somewhere within 
-  //their area.  
+  //rectangles that ALWAYS include the center of the building somewhere within
+  //their area.
   while (1) {
     if (height < min_height)
       break;
@@ -535,11 +535,11 @@ void CBuilding::CreateBlocky ()
     skip = false;
     //At least ONE of the walls must reach out beyond a previous maximum.
     //Otherwise, this tier would be completely hidden within a previous one.
-    if (left <= max_left && right <= max_right && front <= max_front && back <= max_back) 
+    if (left <= max_left && right <= max_right && front <= max_front && back <= max_back)
       skip = true;
     //If any of the four walls is in the same position as the previous max,then
     //skip this tier, or else the two walls will end up z-fightng.
-    if (left == max_left || right == max_right || front == max_front || back == max_back) 
+    if (left == max_left || right == max_right || front == max_front || back == max_back)
       skip = true;
     if (!skip) {
       //if this is the top, then put some lights up here
@@ -569,7 +569,7 @@ void CBuilding::CreateBlocky ()
 
 /*-----------------------------------------------------------------------------
 
-  A single-cube building.  Good for low-rise buildings and stuff that will be 
+  A single-cube building.  Good for low-rise buildings and stuff that will be
   far from the camera;
 
 -----------------------------------------------------------------------------*/
@@ -614,7 +614,7 @@ void CBuilding::CreateSimple ()
   p.position = glVector (x1, y2, z2);  p.uv = glVector (u, v2);
   _mesh->VertexAdd (p);
   u += (float)_width / SEGMENTS_PER_TEXTURE;
-  
+
   p.position = glVector (x2, y1, z2);  p.uv = glVector (u, v1);
   _mesh->VertexAdd (p);
   p.position = glVector (x2, y2, z2);  p.uv = glVector (u, v2);
@@ -641,7 +641,7 @@ void CBuilding::CreateSimple ()
 
 /*-----------------------------------------------------------------------------
 
-  This makes a deformed cylinder building.  
+  This makes a deformed cylinder building.
 
 -----------------------------------------------------------------------------*/
 
@@ -732,7 +732,7 @@ void CBuilding::CreateModern ()
     d = new CDeco;
     d->CreateLightTrim (vector_buffer, (points / 2) - 2, (float)cap_height / 2, _seed, RANDOM_COLOR);
   }
-  qs.index_list.reserve(points);   
+  qs.index_list.reserve(points);
   //Add the outer walls
   for (i = 0; i < points; i++)
     qs.index_list.push_back(i);
@@ -794,7 +794,7 @@ void CBuilding::CreateTower ()
   //The odds that we'll have a big fancy spikey top
   tower = RandomVal (5) != 0 && _height > 40;
   //set our initial parameters
-  left = _x; 
+  left = _x;
   right = _x + _width;
   front = _y;
   back = _y + _depth;
@@ -842,4 +842,3 @@ void CBuilding::CreateTower ()
   _mesh_flat->Compile ();
 
 }
-

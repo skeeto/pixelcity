@@ -6,9 +6,9 @@
 
 -------------------------------------------------------------------------------
 
-  This tracks the position and oritentation of the camera. In screensaver 
-  mode, it moves the camera around the world in order to create dramatic 
-  views of the hot zone.  
+  This tracks the position and oritentation of the camera. In screensaver
+  mode, it moves the camera around the world in order to create dramatic
+  views of the hot zone.
 
 -----------------------------------------------------------------------------*/
 
@@ -71,7 +71,7 @@ static GLvector flycam_position (unsigned t)
   GLbbox      hot_zone;
 
   hot_zone = WorldHotZone ();
-  t %= FLYCAM_CIRCUT; 
+  t %= FLYCAM_CIRCUT;
   leg = t / FLYCAM_LEG;
   delta = (float)(t % FLYCAM_LEG) / FLYCAM_LEG;
   switch (leg) {
@@ -109,7 +109,7 @@ static void do_auto_cam ()
   unsigned  t;
   unsigned  elapsed;
   unsigned  now;
-  int       behavior; 
+  int       behavior;
   GLvector  target;
 
   now = GetTickCount ();
@@ -125,7 +125,7 @@ static void do_auto_cam ()
   behavior = camera_behavior;
 #endif
   tracker += (float)elapsed / 300.0f;
-  //behavior = CAMERA_FLYCAM1; 
+  //behavior = CAMERA_FLYCAM1;
   switch (behavior) {
   case CAMERA_ORBIT_INWARD:
     auto_position.x = WORLD_HALF + sinf (tracker * DEGREES_TO_RADIANS) * 150.0f;
@@ -159,7 +159,7 @@ static void do_auto_cam ()
     target.y /= 2;
     break;
   case CAMERA_SPIN:
-  default:  
+  default:
     target.x = WORLD_HALF + sinf (tracker * DEGREES_TO_RADIANS) * 300.0f;
     target.y = 30.0f;
     target.z = WORLD_HALF + cosf (tracker * DEGREES_TO_RADIANS) * 300.0f;
@@ -291,9 +291,9 @@ void CameraMedial (float val)
 
 -----------------------------------------------------------------------------*/
 
-GLvector CameraPosition (void)		
+GLvector CameraPosition (void)
 {
- 
+
   if (cam_auto)
     return auto_position;
   return position;
@@ -304,7 +304,7 @@ GLvector CameraPosition (void)
 
 -----------------------------------------------------------------------------*/
 
-void CameraReset ()		
+void CameraReset ()
 {
 
   position.y = 50.0f;
@@ -320,7 +320,7 @@ void CameraReset ()
 
 -----------------------------------------------------------------------------*/
 
-void CameraPositionSet (GLvector new_pos)		
+void CameraPositionSet (GLvector new_pos)
 {
 
   position = new_pos;
@@ -331,7 +331,7 @@ void CameraPositionSet (GLvector new_pos)
 
 -----------------------------------------------------------------------------*/
 
-GLvector CameraAngle (void)		
+GLvector CameraAngle (void)
 {
 
   if (cam_auto)
@@ -344,7 +344,7 @@ GLvector CameraAngle (void)
 
 -----------------------------------------------------------------------------*/
 
-void CameraAngleSet (GLvector new_angle)		
+void CameraAngleSet (GLvector new_angle)
 {
 
   angle = new_angle;
@@ -356,7 +356,7 @@ void CameraAngleSet (GLvector new_angle)
 
 -----------------------------------------------------------------------------*/
 
-void CameraInit (void)		
+void CameraInit (void)
 {
 
   angle = IniVector ("CameraAngle");
@@ -368,7 +368,7 @@ void CameraInit (void)
 
 -----------------------------------------------------------------------------*/
 
-void CameraUpdate (void)		
+void CameraUpdate (void)
 {
 
   CameraPan (movement.x);
@@ -380,24 +380,24 @@ void CameraUpdate (void)
     movement *= 0.99f;
   if (SCREENSAVER)
     cam_auto = true;
-  if (cam_auto) 
+  if (cam_auto)
     do_auto_cam ();
-  if (angle.y < 0.0f) 
+  if (angle.y < 0.0f)
     angle.y = 360.0f - (float)fmod (fabs (angle.y), 360.0f);
   angle.y = (float)fmod (angle.y, 360.0f);
   angle.x = CLAMP (angle.x, -MAX_PITCH, MAX_PITCH);
- 
+
 }
 
 /*-----------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------*/
 
-void CameraTerm (void)		
+void CameraTerm (void)
 {
 
   //just store our most recent position in the ini
   IniVectorSet ("CameraAngle", angle);
   IniVectorSet ("CameraPosition", position);
- 
+
 }

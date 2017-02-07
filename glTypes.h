@@ -103,7 +103,7 @@ public:
   unsigned    vertex_count;
   unsigned    triangle_count;
   unsigned    normal_count;
-  GLvertex*   vertex;  
+  GLvertex*   vertex;
   GLvector*   normal;
   GLtriangle* triangle;
 
@@ -206,4 +206,3 @@ float     glVectorLength (GLvector2 v);
 #ifndef NULL
 #define NULL  0
 #endif
-

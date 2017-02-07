@@ -6,7 +6,7 @@
 
 
 -------------------------------------------------------------------------------
-  
+
   This takes various types of data and dumps them into a predefined ini file.
 
 -----------------------------------------------------------------------------*/
@@ -77,7 +77,7 @@ void IniFloatSet (char* entry, float val)
 {
 
   char        buf[20];
-  
+
   sprintf (buf, FORMAT_FLOAT, val);
   WritePrivateProfileString (SECTION, entry, buf, INI_FILE);
 
@@ -114,7 +114,7 @@ void IniStringSet (char* entry, char* val)
 
 void IniVectorSet (char* entry, GLvector v)
 {
-  
+
   sprintf (result, FORMAT_VECTOR, v.x, v.y, v.z);
   WritePrivateProfileString (SECTION, entry, result, INI_FILE);
 

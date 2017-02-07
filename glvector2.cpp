@@ -20,7 +20,7 @@
 #include "macro.h"
 
 /*-----------------------------------------------------------------------------
-                           
+
 -----------------------------------------------------------------------------*/
 
 GLvector2 glVectorNormalize (GLvector2 v)
@@ -36,7 +36,7 @@ GLvector2 glVectorNormalize (GLvector2 v)
 }
 
 /*-----------------------------------------------------------------------------
-                           
+
 -----------------------------------------------------------------------------*/
 
 float glVectorLength (GLvector2 v)
@@ -94,7 +94,7 @@ GLvector2 glVectorAdd (GLvector2 val1, GLvector2 val2)
 
 
 /*-----------------------------------------------------------------------------
-                           
+
 -----------------------------------------------------------------------------*/
 
 GLvector2 glVectorInterpolate (GLvector2 v1, GLvector2 v2, float scalar)
@@ -106,7 +106,7 @@ GLvector2 glVectorInterpolate (GLvector2 v1, GLvector2 v2, float scalar)
   result.y = MathInterpolate (v1.y, v2.y, scalar);
   return result;
 
-}  
+}
 
 /*-----------------------------------------------------------------------------
 
@@ -124,7 +124,7 @@ GLvector2 glVectorSubtract (GLvector2 val1, GLvector2 val2)
 }
 
 /*-----------------------------------------------------------------------------
-+                           
++
 -----------------------------------------------------------------------------*/
 
 GLvector2 GLvector2::operator+ (const GLvector2& c)

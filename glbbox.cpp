@@ -5,8 +5,8 @@
   2006 Shamus Young
 
 -------------------------------------------------------------------------------
-  
-  This module has a few functions useful for manipulating the bounding-box 
+
+  This module has a few functions useful for manipulating the bounding-box
   structs.
 
 -----------------------------------------------------------------------------*/
@@ -49,11 +49,11 @@ GLbbox glBboxContainPoint (GLbbox box, GLvector point)
   box.max.y = MAX (box.max.y, point.y);
   box.max.z = MAX (box.max.z, point.z);
   return box;
-  
+
 }
 
 /*-----------------------------------------------------------------------------
-This will invalidate the bbox. 
+This will invalidate the bbox.
 -----------------------------------------------------------------------------*/
 
 GLbbox glBboxClear (void)
@@ -66,5 +66,3 @@ GLbbox glBboxClear (void)
   return result;
 
 }
-
-

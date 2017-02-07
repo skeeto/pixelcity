@@ -5,7 +5,7 @@
   2006 Shamus Young
 
 -------------------------------------------------------------------------------
-  
+
   Functions useful for manipulating the Matrix struct
 
 -----------------------------------------------------------------------------*/
@@ -16,19 +16,19 @@
 /*** Order type constants, constructors, extractors ***/
 
     /* There are 24 possible conventions, designated by:    */
-    /*	  o EulAxI = axis used initially		    */
-    /*	  o EulPar = parity of axis permutation		    */
-    /*	  o EulRep = repetition of initial axis as last	    */
-    /*	  o EulFrm = frame from which axes are taken	    */
-    /* Axes I,J,K will be a permutation of X,Y,Z.	    */
+    /*    o EulAxI = axis used initially        */
+    /*    o EulPar = parity of axis permutation       */
+    /*    o EulRep = repetition of initial axis as last     */
+    /*    o EulFrm = frame from which axes are taken      */
+    /* Axes I,J,K will be a permutation of X,Y,Z.     */
     /* Axis H will be either I or K, depending on EulRep.   */
-    /* Frame S takes axes from initial static frame.	    */
-    /* If ord = (AxI=X, Par=Even, Rep=No, Frm=S), then	    */
-    /* {a,b,c,ord} means Rz(c)Ry(b)Rx(a), where Rz(c)v	    */
-    /* rotates v around Z by c radians.			    */
+    /* Frame S takes axes from initial static frame.      */
+    /* If ord = (AxI=X, Par=Even, Rep=No, Frm=S), then      */
+    /* {a,b,c,ord} means Rz(c)Ry(b)Rx(a), where Rz(c)v      */
+    /* rotates v around Z by c radians.         */
 
-#define EulFrmS	     0
-#define EulFrmR	     1
+#define EulFrmS      0
+#define EulFrmR      1
 #define EulFrm(ord)  ((unsigned)(ord)&1)
 #define EulRepNo     0
 #define EulRepYes    1
@@ -36,8 +36,8 @@
 #define EulParEven   0
 #define EulParOdd    1
 #define EulPar(ord)  (((unsigned)(ord)>>2)&1)
-#define EulSafe	     "\000\001\002\000"
-#define EulNext	     "\001\002\000\001"
+#define EulSafe      "\000\001\002\000"
+#define EulNext      "\001\002\000\001"
 #define EulAxI(ord)  ((int)(EulSafe[(((unsigned)(ord)>>3)&3)]))
 #define EulAxJ(ord)  ((int)(EulNext[EulAxI(ord)+(EulPar(ord)==EulParOdd)]))
 #define EulAxK(ord)  ((int)(EulNext[EulAxI(ord)+(EulPar(ord)!=EulParOdd)]))
@@ -46,7 +46,7 @@
 #define EulGetOrd(ord,i,j,k,h,n,s,f) {unsigned o=ord;f=o&1;o>>=1;s=o&1;o>>=1;\
     n=o&1;o>>=1;i=EulSafe[o&3];j=EulNext[i+n];k=EulNext[i+1-n];h=s?k:i;}
     /* EulOrd creates an order value between 0 and 23 from 4-tuple choices. */
-#define EulOrd(i,p,r,f)	   (((((((i)<<1)+(p))<<1)+(r))<<1)+(f))
+#define EulOrd(i,p,r,f)    (((((((i)<<1)+(p))<<1)+(r))<<1)+(f))
     /* Static axes */
 #define EulOrdXYZs    EulOrd(X,EulParEven,EulRepNo,EulFrmS)
 #define EulOrdXYXs    EulOrd(X,EulParEven,EulRepYes,EulFrmS)
@@ -80,7 +80,7 @@
 #include "macro.h"
 #include "glTypes.h"
 
-static float      identity[4][4] = 
+static float      identity[4][4] =
 {
   {1.0f, 0.0f, 0.0f, 0.0f},
   {0.0f, 1.0f, 0.0f, 0.0f},
@@ -151,7 +151,7 @@ void glMatrixElementsSet (GLmatrix* m, float* in)
   m -> elements[2][1] = in[9];
   m -> elements[2][2] = in[10];
   m -> elements[2][3] = in[11];
-  
+
   m -> elements[3][0] = in[12];
   m -> elements[3][1] = in[13];
   m -> elements[3][2] = in[14];
@@ -167,12 +167,12 @@ GLmatrix glMatrixMultiply (GLmatrix a, GLmatrix b)
 {
 
   GLmatrix        result;
-  
+
   M(result, 0,0) = M(a, 0,0) * M(b, 0, 0) + M(a, 1,0) * M(b, 0, 1) + M(a, 2,0) * M(b, 0, 2);
   M(result, 1,0) = M(a, 0,0) * M(b, 1, 0) + M(a, 1,0) * M(b, 1, 1) + M(a, 2,0) * M(b, 1, 2);
   M(result, 2,0) = M(a, 0,0) * M(b, 2, 0) + M(a, 1,0) * M(b, 2, 1) + M(a, 2,0) * M(b, 2, 2);
   M(result, 3,0) = M(a, 0,0) * M(b, 3, 0) + M(a, 1,0) * M(b, 3, 1) + M(a, 2,0) * M(b, 3, 2) + M(a, 3,0);
-  
+
   M(result, 0,1) = M(a, 0,1) * M(b, 0, 0) + M(a, 1,1) * M(b, 0, 1) + M(a, 2,1) * M(b, 0, 2);
   M(result, 1,1) = M(a, 0,1) * M(b, 1, 0) + M(a, 1,1) * M(b, 1, 1) + M(a, 2,1) * M(b, 1, 2);
   M(result, 2,1) = M(a, 0,1) * M(b, 2, 0) + M(a, 1,1) * M(b, 2, 1) + M(a, 2,1) * M(b, 2, 2);
@@ -242,7 +242,7 @@ GLmatrix glMatrixRotate (GLmatrix m, float theta, float x, float y, float z)
 
   theta *= DEGREES_TO_RADIANS;
   r = glMatrixIdentity ();
-  length = (float)sqrt (x * x + y * y + z * z); 
+  length = (float)sqrt (x * x + y * y + z * z);
   if (length < 0.00001f)
     return m;
   x /= length;
@@ -250,8 +250,8 @@ GLmatrix glMatrixRotate (GLmatrix m, float theta, float x, float y, float z)
   z /= length;
   s = (float)sin (theta);
   c = (float)cos (theta);
-  t = 1.0f - c;  
- 
+  t = 1.0f - c;
+
   in.x = in.y = in.z = 1.0f;
   M(r, 0,0) = t*x*x + c;
   M(r, 1,0) = t*x*y - s*z;
@@ -281,36 +281,36 @@ GLvector glMatrixToEuler (GLmatrix mat, int order)
 
   EulGetOrd (order,i,j,k,h,n,s,f);
   if (s==EulRepYes) {
-	  float sy = (float)sqrt(mat.elements[i][j]*mat.elements[i][j] + mat.elements[i][k]*mat.elements[i][k]);
-	  if (sy > 16 * FLT_EPSILON) {
-	      ea.x = (float)atan2(mat.elements[i][j], mat.elements[i][k]);
-	      ea.y = (float)atan2(sy, mat.elements[i][i]);
-	      ea.z = (float)atan2(mat.elements[j][i], -mat.elements[k][i]);
-	  } else {
-	      ea.x = (float)atan2(-mat.elements[j][k], mat.elements[j][j]);
-	      ea.y = (float)atan2(sy, mat.elements[i][i]);
-	      ea.z = 0;
-	  }
+    float sy = (float)sqrt(mat.elements[i][j]*mat.elements[i][j] + mat.elements[i][k]*mat.elements[i][k]);
+    if (sy > 16 * FLT_EPSILON) {
+        ea.x = (float)atan2(mat.elements[i][j], mat.elements[i][k]);
+        ea.y = (float)atan2(sy, mat.elements[i][i]);
+        ea.z = (float)atan2(mat.elements[j][i], -mat.elements[k][i]);
+    } else {
+        ea.x = (float)atan2(-mat.elements[j][k], mat.elements[j][j]);
+        ea.y = (float)atan2(sy, mat.elements[i][i]);
+        ea.z = 0;
+    }
   } else {
-	  float cy = (float)sqrt(mat.elements[i][i]*mat.elements[i][i] + mat.elements[j][i]*mat.elements[j][i]);
-	  if (cy > 16*FLT_EPSILON) {
-	      ea.x = (float)atan2(mat.elements[k][j], mat.elements[k][k]);
-	      ea.y = (float)atan2(-mat.elements[k][i], cy);
-	      ea.z = (float)atan2(mat.elements[j][i], mat.elements[i][i]);
-	  } else {
-	      ea.x = (float)atan2(-mat.elements[j][k], mat.elements[j][j]);
-	      ea.y = (float)atan2(-mat.elements[k][i], cy);
-	      ea.z = 0;
-	  }
+    float cy = (float)sqrt(mat.elements[i][i]*mat.elements[i][i] + mat.elements[j][i]*mat.elements[j][i]);
+    if (cy > 16*FLT_EPSILON) {
+        ea.x = (float)atan2(mat.elements[k][j], mat.elements[k][k]);
+        ea.y = (float)atan2(-mat.elements[k][i], cy);
+        ea.z = (float)atan2(mat.elements[j][i], mat.elements[i][i]);
+    } else {
+        ea.x = (float)atan2(-mat.elements[j][k], mat.elements[j][j]);
+        ea.y = (float)atan2(-mat.elements[k][i], cy);
+        ea.z = 0;
+    }
   }
   if (n==EulParOdd) {
-    ea.x = -ea.x;  
-    ea.y = - ea.y; 
+    ea.x = -ea.x;
+    ea.y = - ea.y;
     ea.z = -ea.z;
   }
   if (f==EulFrmR) {
-    float t = ea.x; 
-    ea.x = ea.z; 
+    float t = ea.x;
+    ea.x = ea.z;
     ea.z = t;
   }
   //ea.w = order;

@@ -35,7 +35,7 @@ private:
   void                    CreateBlocky ();
   void                    CreateModern ();
   void                    CreateTower ();
-  
+
   float                   ConstructWall (int start_x, int start_y, int start_z, int direction, int length, int height, int window_groups, float uv_start, bool blank_corners);
   void                    ConstructSpike (int left, int right, int front, int back, int bottom, int top);
   void                    ConstructCube (int left, int right, int front, int back, int bottom, int top);

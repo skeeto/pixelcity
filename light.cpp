@@ -6,11 +6,11 @@
 
 -------------------------------------------------------------------------------
 
-  This tracks and renders the light sources. (Note that they do not really 
-  CAST light in the OpenGL sense of the world, these are just simple panels.) 
-  These are NOT subclassed to entities because these are dynamic.  Some lights 
-  blink, and thus they can't go into the fixed render lists managed by 
-  Entity.cpp.  
+  This tracks and renders the light sources. (Note that they do not really
+  CAST light in the OpenGL sense of the world, these are just simple panels.)
+  These are NOT subclassed to entities because these are dynamic.  Some lights
+  blink, and thus they can't go into the fixed render lists managed by
+  Entity.cpp.
 
 -----------------------------------------------------------------------------*/
 
@@ -94,7 +94,7 @@ void LightRender ()
   glBindTexture(GL_TEXTURE_2D, TextureId (TEXTURE_LIGHT));
   glDisable (GL_CULL_FACE);
   glBegin (GL_QUADS);
-  for (l = head; l; l = l->_next) 
+  for (l = head; l; l = l->_next)
     l->Render ();
   glEnd ();
   glDepthMask (true);
@@ -131,7 +131,7 @@ void CLight::Blink ()
 {
 
   _blink = true;
-  //we don't want blinkers to be in sync, so have them blink at 
+  //we don't want blinkers to be in sync, so have them blink at
   //slightly different rates. (Milliseconds)
   _blink_interval = 1500 + RandomVal (500);
 
@@ -164,13 +164,13 @@ void CLight::Render ()
   offset = angles[_size][angle];
   pos = _position;
   glColor4fv (&_color.red);
-  glTexCoord2f (0, 0);   
+  glTexCoord2f (0, 0);
   glVertex3f (pos.x + offset.x, pos.y - _vert_size, pos.z + offset.y);
-  glTexCoord2f (0, 1);   
+  glTexCoord2f (0, 1);
   glVertex3f (pos.x - offset.x, pos.y - _vert_size, pos.z - offset.y);
-  glTexCoord2f (1, 1);   
+  glTexCoord2f (1, 1);
   glVertex3f (pos.x - offset.x, pos.y + _vert_size, pos.z - offset.y);
-  glTexCoord2f (1, 0);   
+  glTexCoord2f (1, 0);
   glVertex3f (pos.x + offset.x, pos.y + _vert_size, pos.z + offset.y);
 
 }

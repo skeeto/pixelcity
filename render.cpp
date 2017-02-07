@@ -5,10 +5,10 @@
   2009 Shamus Young
 
 -------------------------------------------------------------------------------
-  
-  This is the core of the gl rendering functions.  This contains the main 
-  rendering function RenderUpdate (), which initiates the various 
-  other renders in the other modules. 
+
+  This is the core of the gl rendering functions.  This contains the main
+  rendering function RenderUpdate (), which initiates the various
+  other renders in the other modules.
 
 -----------------------------------------------------------------------------*/
 
@@ -45,32 +45,32 @@
 #include "world.h"
 #include "win.h"
 
-static	PIXELFORMATDESCRIPTOR pfd =			
+static  PIXELFORMATDESCRIPTOR pfd =
 {
-	sizeof(PIXELFORMATDESCRIPTOR),			
-	1,											  // Version Number
-	PFD_DRAW_TO_WINDOW |			// Format Must Support Window
-	PFD_SUPPORT_OPENGL |			// Format Must Support OpenGL
-	PFD_DOUBLEBUFFER,					// Must Support Double Buffering
-	PFD_TYPE_RGBA,						// Request An RGBA Format
-	32,										    // Select Our glRgbaDepth
-	0, 0, 0, 0, 0, 0,					// glRgbaBits Ignored
-	0,											  // No Alpha Buffer
-	0,											  // Shift Bit Ignored
-	0,											  // Accumulation Buffers
-	0, 0, 0, 0,								// Accumulation Bits Ignored
-	16,											  // Z-Buffer (Depth Buffer)  bits
-	0,											  // Stencil Buffers
-	1,											  // Auxiliary Buffers
-	PFD_MAIN_PLANE,						// Main Drawing Layer
-	0,											  // Reserved
-	0, 0, 0										// Layer Masks Ignored
+  sizeof(PIXELFORMATDESCRIPTOR),
+  1,                        // Version Number
+  PFD_DRAW_TO_WINDOW |      // Format Must Support Window
+  PFD_SUPPORT_OPENGL |      // Format Must Support OpenGL
+  PFD_DOUBLEBUFFER,         // Must Support Double Buffering
+  PFD_TYPE_RGBA,            // Request An RGBA Format
+  32,                       // Select Our glRgbaDepth
+  0, 0, 0, 0, 0, 0,         // glRgbaBits Ignored
+  0,                        // No Alpha Buffer
+  0,                        // Shift Bit Ignored
+  0,                        // Accumulation Buffers
+  0, 0, 0, 0,               // Accumulation Bits Ignored
+  16,                       // Z-Buffer (Depth Buffer)  bits
+  0,                        // Stencil Buffers
+  1,                        // Auxiliary Buffers
+  PFD_MAIN_PLANE,           // Main Drawing Layer
+  0,                        // Reserved
+  0, 0, 0                   // Layer Masks Ignored
 };
 
-static char             help[] = 
-  "ESC - Exit!\n" 
-  "F1  - Show this help screen\n" 
-  "R   - Rebuild city\n" 
+static char             help[] =
+  "ESC - Exit!\n"
+  "F1  - Show this help screen\n"
+  "R   - Rebuild city\n"
   "L   - Toggle 'letterbox' mode\n"
   "F   - Show Framecounter\n"
   "W   - Toggle Wireframe\n"
@@ -82,8 +82,8 @@ static char             help[] =
 struct glFont
 {
   char*         name;
-  unsigned		  base_char;
-} fonts[] = 
+  unsigned      base_char;
+} fonts[] =
 {
   "Courier New",      0,
   "Arial",            0,
@@ -118,10 +118,10 @@ enum
   EFFECT_COLOR_CYCLE,
   EFFECT_GLASS_CITY,
 };
-#endif 
+#endif
 
-static HDC			        hDC;
-static HGLRC		        hRC;
+static HDC              hDC;
+static HGLRC            hRC;
 static float            render_aspect;
 static float            fog_distance;
 static int              render_width;
@@ -213,7 +213,7 @@ static void do_effects (int type)
   int             i;
   int             bloom_radius;
   int             bloom_step;
-  
+
   fade = WorldFade ();
   bloom_radius = 15;
   bloom_step = bloom_radius / 3;
@@ -224,10 +224,10 @@ static void do_effects (int type)
   glPushMatrix ();
   glLoadIdentity ();
   glOrtho (0, render_width, render_height, 0, 0.1f, 2048);
-	glMatrixMode (GL_MODELVIEW);
+  glMatrixMode (GL_MODELVIEW);
   glPushMatrix ();
   glLoadIdentity();
-  glTranslatef(0, 0, -1.0f);				
+  glTranslatef(0, 0, -1.0f);
   glDisable (GL_CULL_FACE);
   glDisable (GL_FOG);
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -375,22 +375,22 @@ int RenderMaxTextureSize ()
 
 -----------------------------------------------------------------------------*/
 
-void RenderPrint (int x, int y, int font, GLrgba color, const char *fmt, ...)				
+void RenderPrint (int x, int y, int font, GLrgba color, const char *fmt, ...)
 {
 
-  char		  text[MAX_TEXT];	
-  va_list		ap;					
-  
+  char      text[MAX_TEXT];
+  va_list   ap;
+
   text[0] = 0;
-  if (fmt == NULL)			
-		  return;						
-  va_start(ap, fmt);		
-  vsprintf(text, fmt, ap);				
-  va_end(ap);		
-  glPushAttrib(GL_LIST_BIT);				
-  glListBase(fonts[font % FONT_COUNT].base_char - 32);				
+  if (fmt == NULL)
+      return;
+  va_start(ap, fmt);
+  vsprintf(text, fmt, ap);
+  va_end(ap);
+  glPushAttrib(GL_LIST_BIT);
+  glListBase(fonts[font % FONT_COUNT].base_char - 32);
   glColor3fv (&color.red);
-	glRasterPos2i (x, y);
+  glRasterPos2i (x, y);
   glCallLists(strlen(text), GL_UNSIGNED_BYTE, text);
 
 }
@@ -399,28 +399,28 @@ void RenderPrint (int x, int y, int font, GLrgba color, const char *fmt, ...)
 
 -----------------------------------------------------------------------------*/
 
-void RenderPrint (int line, const char *fmt, ...)				
+void RenderPrint (int line, const char *fmt, ...)
 {
 
-  char		  text[MAX_TEXT];	
-	va_list		ap;			
-	
-  text[0] = 0;	
-  if (fmt == NULL)			
-		  return;						
-  va_start (ap, fmt);		
-  vsprintf (text, fmt, ap);				
-  va_end (ap);		
+  char      text[MAX_TEXT];
+  va_list   ap;
+
+  text[0] = 0;
+  if (fmt == NULL)
+      return;
+  va_start (ap, fmt);
+  vsprintf (text, fmt, ap);
+  va_end (ap);
   glMatrixMode (GL_PROJECTION);
   glPushMatrix ();
   glLoadIdentity ();
   glOrtho (0, render_width, render_height, 0, 0.1f, 2048);
   glDisable(GL_DEPTH_TEST);
   glDepthMask (false);
-	glMatrixMode (GL_MODELVIEW);
+  glMatrixMode (GL_MODELVIEW);
   glPushMatrix ();
   glLoadIdentity();
-  glTranslatef(0, 0, -1.0f);				
+  glTranslatef(0, 0, -1.0f);
   glDisable (GL_BLEND);
   glDisable (GL_FOG);
   glDisable (GL_TEXTURE_2D);
@@ -428,7 +428,7 @@ void RenderPrint (int line, const char *fmt, ...)
   RenderPrint (0, line * FONT_SIZE - 2, 0, glRgba (0.0f), text);
   RenderPrint (4, line * FONT_SIZE + 2, 0, glRgba (0.0f), text);
   RenderPrint (2, line * FONT_SIZE, 0, glRgba (1.0f), text);
-  glPopAttrib();						
+  glPopAttrib();
   glPopMatrix ();
   glMatrixMode (GL_PROJECTION);
   glPopMatrix ();
@@ -447,7 +447,7 @@ void static do_help (void)
   int       line;
   char      parse[HELP_SIZE];
   int       x;
-  
+
   strcpy (parse, help);
   line = 0;
   text = strtok (parse, "\n");
@@ -479,7 +479,7 @@ void do_fps ()
 
 -----------------------------------------------------------------------------*/
 
-void RenderResize (void)		
+void RenderResize (void)
 {
 
   float     fovy;
@@ -489,7 +489,7 @@ void RenderResize (void)
   if (letterbox) {
     letterbox_offset = render_height / 6;
     render_height = render_height - letterbox_offset * 2;
-  } else 
+  } else
     letterbox_offset = 0;
   //render_aspect = (float)render_height / (float)render_width;
   glViewport (0, letterbox_offset, render_width, render_height);
@@ -497,10 +497,10 @@ void RenderResize (void)
   glLoadIdentity ();
   render_aspect = (float)render_width / (float)render_height;
   fovy = 60.0f;
-  if (render_aspect > 1.0f) 
-    fovy /= render_aspect; 
+  if (render_aspect > 1.0f)
+    fovy /= render_aspect;
   gluPerspective (fovy, render_aspect, 0.1f, RENDER_DISTANCE);
-	glMatrixMode (GL_MODELVIEW);
+  glMatrixMode (GL_MODELVIEW);
 
 }
 
@@ -526,32 +526,32 @@ void RenderInit (void)
 {
 
   HWND              hWnd;
-	unsigned		      PixelFormat;
-  HFONT	            font;		
-	HFONT	            oldfont;
+  unsigned          PixelFormat;
+  HFONT             font;
+  HFONT             oldfont;
 
   hWnd = WinHwnd ();
-  if (!(hDC = GetDC (hWnd))) 
-		YOUFAIL ("Can't Create A GL Device Context.") ;
-	if (!(PixelFormat = ChoosePixelFormat(hDC,&pfd)))
-		YOUFAIL ("Can't Find A Suitable PixelFormat.") ;
+  if (!(hDC = GetDC (hWnd)))
+    YOUFAIL ("Can't Create A GL Device Context.") ;
+  if (!(PixelFormat = ChoosePixelFormat(hDC,&pfd)))
+    YOUFAIL ("Can't Find A Suitable PixelFormat.") ;
   if(!SetPixelFormat(hDC,PixelFormat,&pfd))
-		YOUFAIL ("Can't Set The PixelFormat.");
-	if (!(hRC = wglCreateContext (hDC)))	
-		YOUFAIL ("Can't Create A GL Rendering Context.");
-  if(!wglMakeCurrent(hDC,hRC))	
-		YOUFAIL ("Can't Activate The GL Rendering Context.");
+    YOUFAIL ("Can't Set The PixelFormat.");
+  if (!(hRC = wglCreateContext (hDC)))
+    YOUFAIL ("Can't Create A GL Rendering Context.");
+  if(!wglMakeCurrent(hDC,hRC))
+    YOUFAIL ("Can't Activate The GL Rendering Context.");
   //Load the fonts for printing debug info to the window.
   for (int i = 0; i < FONT_COUNT; i++) {
-	  fonts[i].base_char = glGenLists(96); 
-	  font = CreateFont (FONT_SIZE,	0, 0,	0,	
-				  FW_BOLD, FALSE,	FALSE, FALSE,	DEFAULT_CHARSET,	OUT_TT_PRECIS,		
-				  CLIP_DEFAULT_PRECIS,	ANTIALIASED_QUALITY, FF_DONTCARE|DEFAULT_PITCH,
-				  fonts[i].name);
-	  oldfont = (HFONT)SelectObject(hDC, font);	
-	  wglUseFontBitmaps(hDC, 32, 96, fonts[i].base_char);
-	  SelectObject(hDC, oldfont);
-	  DeleteObject(font);		
+    fonts[i].base_char = glGenLists(96);
+    font = CreateFont (FONT_SIZE, 0, 0, 0,
+          FW_BOLD, FALSE, FALSE, FALSE, DEFAULT_CHARSET,  OUT_TT_PRECIS,
+          CLIP_DEFAULT_PRECIS,  ANTIALIASED_QUALITY, FF_DONTCARE|DEFAULT_PITCH,
+          fonts[i].name);
+    oldfont = (HFONT)SelectObject(hDC, font);
+    wglUseFontBitmaps(hDC, 32, 96, fonts[i].base_char);
+    SelectObject(hDC, oldfont);
+    DeleteObject(font);
   }
   //If the program is running for the first time, set the defaults.
   if (!IniInt ("SetDefaults")) {
@@ -668,7 +668,7 @@ void RenderEffectCycle ()
 bool RenderBloom ()
 {
 
-  return effect == EFFECT_BLOOM || effect == EFFECT_BLOOM_RADIAL 
+  return effect == EFFECT_BLOOM || effect == EFFECT_BLOOM_RADIAL
     || effect == EFFECT_DEBUG_OVERBLOOM || effect == EFFECT_COLOR_CYCLE;
 
 }
@@ -720,7 +720,7 @@ float RenderFogDistance ()
 
 /*-----------------------------------------------------------------------------
 
-  This is used to set a gradient fog that goes from camera to some portion of 
+  This is used to set a gradient fog that goes from camera to some portion of
   the normal fog distance.  This is used for making wireframe outlines and
   flat surfaces fade out after rebuild.  Looks cool.
 
@@ -743,7 +743,7 @@ void RenderFogFX (float scalar)
 
 -----------------------------------------------------------------------------*/
 
-void RenderUpdate (void)		
+void RenderUpdate (void)
 {
 
   GLvector        pos;
@@ -758,24 +758,24 @@ void RenderUpdate (void)
   glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
   glEnable(GL_DEPTH_TEST);
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  if (letterbox) 
+  if (letterbox)
     glViewport (0, letterbox_offset, render_width, render_height);
   if (LOADING_SCREEN && TextureReady () && !EntityReady ()) {
     do_effects (EFFECT_NONE);
     SwapBuffers (hDC);
     return;
   }
-	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+  glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
   glShadeModel(GL_SMOOTH);
   glFogi (GL_FOG_MODE, GL_LINEAR);
-	glDepthFunc(GL_LEQUAL);
+  glDepthFunc(GL_LEQUAL);
   glEnable (GL_CULL_FACE);
   glCullFace (GL_BACK);
   glEnable (GL_BLEND);
   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glMatrixMode (GL_TEXTURE);
   glLoadIdentity();
-	glMatrixMode (GL_MODELVIEW);
+  glMatrixMode (GL_MODELVIEW);
   glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
   glLoadIdentity();
   glLineWidth (1.0f);
@@ -806,7 +806,7 @@ void RenderUpdate (void)
     glDisable(GL_DEPTH_TEST);
     glMatrixMode (GL_TEXTURE);
     glTranslatef ((pos.x + pos.z) / SEGMENTS_PER_TEXTURE, 0, 0);
-	  glMatrixMode (GL_MODELVIEW);
+    glMatrixMode (GL_MODELVIEW);
   } else {
     glEnable (GL_CULL_FACE);
     glDisable (GL_BLEND);
@@ -821,7 +821,7 @@ void RenderUpdate (void)
       glBlendFunc (GL_ONE, GL_ONE);
       EntityRender ();
     }
-  } 
+  }
   if (EntityReady ())
     LightRender ();
   CarRender ();
@@ -832,7 +832,7 @@ void RenderUpdate (void)
   }
   do_effects (effect);
   //Framerate tracker
-  if (show_fps) 
+  if (show_fps)
     RenderPrint (1, "FPS=%d : Entities=%d : polys=%d", current_fps, EntityCount () + LightCount () + CarCount (), EntityPolyCount () + LightCount () + CarCount ());
   //Show the help overlay
   if (show_help)
