@@ -584,7 +584,7 @@ void CBuilding::CreateSimple ()
   float       cap_height;
   float       ledge;
 
-  for(int i=0; i<=10; i++)
+  for(int i=0; i<10; i++)
     qs.index_list.push_back(i);
 
   //How tall the flat-color roof is
